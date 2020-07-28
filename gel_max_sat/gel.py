@@ -167,15 +167,8 @@ class Graph():
         role_iri = concept.role_iri
         # get Cj
         origin_concept_iri = concept.concept_iri
-        # create rij
-        artificial_role = ArtificialRole(role_iri, origin_concept_iri)
-        # add rij
-        self.add_role(artificial_role)
-        # TODO: check if is derivated
         # add '∃ri.Cj' ⊑ ∃ri.Cj
         self.add_axiom(concept, origin_concept_iri, role_iri)
-        # add Cj ⊑ ∃rij.'∃ri.Cj'
-        self.add_axiom(origin_concept_iri, concept, artificial_role.iri)
 
     def get_concept(self, concept):
         if not isinstance(concept, Concept):
@@ -234,11 +227,10 @@ class Graph():
 
     def add_random_axiom(self, pbox_id=-1):
         roles = self.get_roles()
-        concepts = (c for c in self.get_concepts() if c != graph.init)
 
         return self.add_axiom(
-            random.choice(concepts).iri,
-            random.choice(concepts).iri,
+            random.choice(self.real_concepts).iri,
+            random.choice(self.real_concepts).iri,
             random.choice(roles).iri,
             pbox_id=pbox_id
         )
@@ -249,6 +241,7 @@ class Graph():
         sup_concept = self.get_concept(sup_concept)
         role = self.get_role(role)
 
+        sup_concept, role = self.remove_existential_body(sup_concept, role)
         arrow = Arrow(sup_concept, role, pbox_id, is_derivated)
         if not sub_concept.has_arrow(arrow):
             sub_concept.add_arrow(arrow)
@@ -262,6 +255,12 @@ class Graph():
             self.check_new_derivations_from_axioms_and_roles(axiom)
             return True
         return False
+
+    def remove_existential_body(self, sup_concept, role):
+        existential_concept = ExistentialConcept(role.iri, sup_concept.iri)
+        if existential_concept.iri in self.concepts:
+            return self.get_concept(existential_concept.iri), self.is_a
+        return sup_concept, role
 
     def add_pbox_axiom(self, pbox_id, axiom):
         self.pbox_axioms[pbox_id] = axiom
@@ -315,7 +314,7 @@ class Graph():
                 for d in ri_e.sup_concepts(role=self.is_a):
                     yield c, d
 
-        def complete_rule_5():
+        def complete_rule_3():
             ok = False
             for ri_e in self.existential_concepts():
                 for c, d in concepts_connected_by_existential(ri_e):
@@ -327,7 +326,7 @@ class Graph():
             reached_by_init = self.init.sup_concepts_reached()
             return c in reached_by_init and d in reached_by_init
 
-        def complete_rule_7():
+        def complete_rule_5():
             ok = False
             for a in self.individuals():
                 for c in a.sub_concepts_reach():
@@ -340,8 +339,8 @@ class Graph():
         ok = False
         while not ok:
             ok = True
+            ok = ok and not complete_rule_3()
             ok = ok and not complete_rule_5()
-            ok = ok and not complete_rule_7()
 
     @classmethod
     def random(cls,
@@ -370,9 +369,12 @@ class Graph():
 
         # add certain axioms randomly
         certain_axioms_count = max(0, axioms_count - uncertain_axioms_count)
+        graph.real_concepts = [
+            c for c in graph.get_concepts() if c != graph.init]
         graph.add_random_axioms(certain_axioms_count)
 
         # add uncertain axioms randomly
         graph.add_random_axioms(uncertain_axioms_count, is_uncertain=True)
 
         graph.complete()
+        return graph

@@ -118,4 +118,4 @@ def extract_concept_iri(owl_existential_concept):
 
 
 if __name__ == '__main__':
-    parse('../data/example8.owl')
+    parse('../data/example.owl')

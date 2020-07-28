@@ -18,12 +18,12 @@ if __name__ == '__main__':
         # plt.rcParams.update({'font.size': 16})
         fig, ax1 = plt.subplots()
         ax1.set_xlabel('m/n')
-        ax1.set_title('PGEL-SAT: SAT proportion and time')
+        ax1.set_title('GEL-MaxSAT: SAT proportion and time')
 
         sats_mean = means.get('SAT proportion').values
         sats_stdev = stdevs.get('SAT proportion').values
 
-        ax1.set_ylabel('%PGEL-SAT', color='b')
+        ax1.set_ylabel('%GEL-MaxSAT', color='b')
         ax1.plot(axioms_counts, sats_mean, color='b')
         ax1.fill_between(axioms_counts,
                          sats_mean - sats_stdev / 2,

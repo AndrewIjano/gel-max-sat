@@ -47,7 +47,7 @@ def print_gel_max_sat_problem(function):
 
     def wrapper(kb, weights):
         print()
-        print('-' * 18, 'GEL++ MAX-SAT PROBLEM', '-' * 19)
+        print('-' * 18, 'GEL MAX-SAT PROBLEM', '-' * 19)
         print('  i \t\t w(Ax_i) \t\t Ax_i')
         print('-' * 60)
         i = 0
