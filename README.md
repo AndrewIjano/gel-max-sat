@@ -42,7 +42,7 @@ python3 plot.py data/experiments/<experiment>
 ``` 
 
 ### Example
-This is the experiment behaviour for the default configuration:
+This is the plot of an experiment using default configuration:
 
 ![](./data/plots/m11-M200-s1-n60-p10-t100-r3.png)
 
