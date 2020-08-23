@@ -94,13 +94,16 @@ def track_time(function):
 
 @track_time
 def run_experiment(*args, **kwargs):
-    sat_mean, time_mean = test_gel_max_sat_satisfatibility(*args, **kwargs)
+    (sat_mean, time_mean), (sat_std,
+                            time_std) = test_gel_max_sat_satisfatibility(*args, **kwargs)
     axioms_count, concepts_count, prob_axioms_count = args
     return (concepts_count,
             axioms_count / concepts_count,
             prob_axioms_count,
             sat_mean,
-            time_mean)
+            time_mean,
+            sat_std,
+            time_std)
 
 
 def test_gel_max_sat_satisfatibility(axioms_count,
@@ -129,7 +132,7 @@ def test_gel_max_sat_satisfatibility(axioms_count,
         sat_and_time_results[idx, 0] = sat
         sat_and_time_results[idx, 1] = time
 
-    return np.mean(sat_and_time_results, axis=0)
+    return np.mean(sat_and_time_results, axis=0), np.std(sat_and_time_results, axis=0)
 
 
 @track_time
@@ -144,8 +147,11 @@ def create_data_frame(data_set):
             'Concepts count',
             'Axioms count',
             'Uncertain axioms count',
-            'SAT proportion',
-            'Time'])
+            'SAT proportion mean',
+            'Time mean',
+            'SAT proportion std',
+            'Time std',
+            ])
 
 
 def export_data_frame(data_frame, arg_values):
