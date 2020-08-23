@@ -351,12 +351,7 @@ class Graph():
 
         graph = cls('bot', 'top')
 
-        # add concepts and individuals
-        INDIVIUALS_PROPORTION = axioms_count / (concepts_count**2)
-
         def get_random_concept(iri):
-            if random.random() < INDIVIUALS_PROPORTION:
-                return IndividualConcept(iri)
             return Concept(iri)
 
         for i in range(concepts_count):
@@ -369,8 +364,7 @@ class Graph():
 
         # add certain axioms randomly
         certain_axioms_count = max(0, axioms_count - uncertain_axioms_count)
-        graph.real_concepts = [
-            c for c in graph.get_concepts() if c != graph.init]
+        graph.real_concepts = [c for c in graph.get_concepts()]
         graph.add_random_axioms(certain_axioms_count)
 
         # add uncertain axioms randomly
