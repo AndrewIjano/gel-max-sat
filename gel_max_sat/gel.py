@@ -291,7 +291,7 @@ class Graph():
 
     def check_new_derivations_from_axioms_and_roles(self, axiom):
         sub_concept, sup_concept, role = axiom
-        for sup_role in self.role_inclusions.get(role.iri, []):
+        for _ in self.role_inclusions.get(role.iri, []):
             self.add_axiom(sub_concept, sup_concept, role, is_derivated=True)
 
         for d, j in sup_concept.sub_concepts_with_roles(without=self.is_a):
