@@ -25,11 +25,11 @@ The formulas in the experiments are generated randomly. Because every Graphic EL
 
 We have the following fixed values:
 - `n`, the number of concepts;
-- `m`, the number of axioms (certain and uncertain);
-- `p`, the number of uncertain axioms;
+- `m`, the number of axioms; 
+- `p`, the number of finite weighted axioms;
 - `r`, the number of roles.
 
-First, we start with a graph `G` with zero arrows and three vertices: `⊤` (the *top concept*), `⊥` (the *bottom concept*) and `init` (the artificial initial concept). Then, we add `n` vertices and `r` roles to `G`. After that, we add `m - p` certain arrows and `p` uncertain arrows. The arrows are added by chosing randomly two vertices `C` and `D` (`n + 3` possibilities for each one) and creating an arrow from `C` to `D`, its role is chosen uniformly between an "is a" role (`C ⊑ D`) and the `r` other roles (`C ⊑ ∃ri.D`).  
+First, we start with a graph `G` with zero arrows and three vertices: `⊤` (the *top concept*), `⊥` (the *bottom concept*) and `init` (the artificial initial concept). Then, we add `n` vertices and `r` roles to `G`. After that, we add `m - p` infinite weighted arrows and `p` finite weighted arrows. The arrows are added by chosing randomly two vertices `C` and `D` (`n + 3` possibilities for each one) and creating an arrow from `C` to `D`, its role is chosen uniformly between an "is a" role (`C ⊑ D`) and the `r` other roles (`C ⊑ ∃ri.D`).  
 
 Note that we do not need to generate body-existential axioms (`∃ri.C ⊑  D`) because they can be represented by simple and existential-head axioms. Also, individual concepts are represented by every concept `C` such that `init ⊑ C`. 
 
