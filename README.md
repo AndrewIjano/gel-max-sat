@@ -47,7 +47,7 @@ Finally, during and after the insertion of arrows, the graph is completed follow
 The experiments can be plotted by running
 
 ```bash
-python3 plot.py data/experiments/<experiment>
+python3 plot.py [optional arguments] data/experiments/<experiment>
 ```
 
 ### Example

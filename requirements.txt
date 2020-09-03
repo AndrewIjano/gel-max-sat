@@ -1,4 +1,6 @@
-matplotlib==3.2.1
-pandas==1.0.4
-Owlready2==0.24
 numpy==1.18.5
+scipy==1.4.1
+matplotlib==3.2.1
+pytest==5.4.3
+Owlready2==0.24
+pandas==1.0.4
