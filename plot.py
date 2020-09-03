@@ -44,7 +44,7 @@ def main():
         plot_linear_fit(axioms_counts, times_mean, ax2)
 
     filename = extract_filename(experiment_path)
-    plt.savefig(f'data/plots/{filename}.png')
+    plt.savefig(f'data/plots/{filename}.png', bbox_inches='tight')
 
     if args.show:
         plt.show()
