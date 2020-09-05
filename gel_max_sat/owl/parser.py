@@ -8,7 +8,7 @@ def parse(file):
     onto.load()
 
     graph = get_graph(onto)
-    return graph
+    return onto, graph
 
 
 def get_graph(onto):

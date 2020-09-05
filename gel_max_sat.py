@@ -17,6 +17,8 @@ def main():
         print_gel_max_sat_problem(kb, weights, result)
     else:
         print(has_solution(result))
+    
+    kb.onto.save(file = "output", format = "rdfxml")
 
 def has_solution(result):
     return result['success']

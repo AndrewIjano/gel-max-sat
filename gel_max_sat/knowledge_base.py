@@ -23,10 +23,12 @@ class KnowledgeBase:
 
     @classmethod
     def from_file(cls, file):
-        graph = owl.parser.parse(file)
+        onto, graph = owl.parser.parse(file)
         graph.complete()
 
-        return cls(graph)
+        kb = cls(graph)
+        kb.onto = onto
+        return kb
 
     @classmethod
     def random(cls, concepts_count=20,
