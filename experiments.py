@@ -90,11 +90,9 @@ def run_experiments(axioms_range, *args, **kwargs):
     for axioms_count in axioms_range:
         print_verbose(end='  {:3}  | '.format(axioms_count))
         experiment = (axioms_count, *args)
-        # print('>>>', experiment)
         data, exec_time = run_experiment(*experiment, **kwargs)
         data_set += [data]
         print_verbose('{:.5f}'.format(exec_time))
-        # print(data)
     return data_set
 
 
@@ -138,7 +136,7 @@ def test_gel_max_sat_satisfatibility(axioms_count,
 
     def random_weights():
         for _ in range(test_count):
-            yield np.random.uniform(size=prob_axioms_count)
+            yield [random.random() for _ in range(prob_axioms_count)]
 
     sat_and_time_results = np.empty((test_count, 2))
     random_samples = zip(random_knowledge_bases(), random_weights())
@@ -172,8 +170,8 @@ def create_data_frame(data_set):
 def export_data_frame(data_frame, arg_values, custom_output):
     if custom_output is not None:
         data_frame.to_csv(custom_output, index=False)
-        return        
-    
+        return
+
     filename = 'data/experiments/'
     filename += 'm{}-M{}-s{}-n{}-p{}-t{}-r{}'
     filename += '.csv'
