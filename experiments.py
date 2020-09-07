@@ -3,8 +3,10 @@ import numpy as np
 import pandas as pd
 import gel_max_sat
 import argparse
+import random
 
 IS_VERBOSE = False
+DEFAULT_SEED = 131191368
 
 
 def main():
@@ -14,8 +16,9 @@ def main():
     global IS_VERBOSE
     IS_VERBOSE = args.verbose
 
-    axioms_range = range(args.axioms_range_min,
-                         args.axioms_range_max, args.axioms_range_step)
+    random.seed(args.seed)
+
+    axioms_range = generate_axiom_range(args)
 
     data_set = run_experiments(
         axioms_range,
@@ -26,13 +29,13 @@ def main():
     )
 
     data_frame = create_data_frame(data_set)
-    export_data_frame(data_frame, vars(args).values())
+    export_data_frame(data_frame, vars(args).values(), args.output)
 
 
 def init_argparse():
     parser = argparse.ArgumentParser(
         usage='%(prog)s [options]',
-        description='Run experiments for GEL-MaxSAT algorithm.',
+        description='Run experiments for GEL-MaxSAT algorithm. If not specified, they are saved in data/experiments/',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
@@ -57,6 +60,12 @@ def init_argparse():
     parser.add_argument('-r', '--roles-count', nargs='?', default=3,
                         type=int, help='number of roles tested')
 
+    parser.add_argument('-o', '--output', nargs='?', default=None,
+                        type=str, help='custom path of the output')
+
+    parser.add_argument('--seed', nargs='?', default=DEFAULT_SEED,
+                        type=int, help='change the seed used in the random processes')
+
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='print the progress of the experiments')
 
@@ -68,6 +77,12 @@ def print_verbose(*args, **kwargs):
         print(*args, **kwargs)
 
 
+def generate_axiom_range(args):
+    return range(args.axioms_range_min,
+                 args.axioms_range_max,
+                 args.axioms_range_step)
+
+
 def run_experiments(axioms_range, *args, **kwargs):
     data_set = []
     print_verbose('axioms |  time ')
@@ -75,11 +90,9 @@ def run_experiments(axioms_range, *args, **kwargs):
     for axioms_count in axioms_range:
         print_verbose(end='  {:3}  | '.format(axioms_count))
         experiment = (axioms_count, *args)
-        # print('>>>', experiment)
         data, exec_time = run_experiment(*experiment, **kwargs)
         data_set += [data]
         print_verbose('{:.5f}'.format(exec_time))
-        # print(data)
     return data_set
 
 
@@ -123,7 +136,7 @@ def test_gel_max_sat_satisfatibility(axioms_count,
 
     def random_weights():
         for _ in range(test_count):
-            yield np.random.uniform(size=prob_axioms_count)
+            yield [random.random() for _ in range(prob_axioms_count)]
 
     sat_and_time_results = np.empty((test_count, 2))
     random_samples = zip(random_knowledge_bases(), random_weights())
@@ -151,10 +164,14 @@ def create_data_frame(data_set):
             'Time mean',
             'SAT proportion std',
             'Time std',
-            ])
+        ])
 
 
-def export_data_frame(data_frame, arg_values):
+def export_data_frame(data_frame, arg_values, custom_output):
+    if custom_output is not None:
+        data_frame.to_csv(custom_output, index=False)
+        return
+
     filename = 'data/experiments/'
     filename += 'm{}-M{}-s{}-n{}-p{}-t{}-r{}'
     filename += '.csv'

@@ -350,12 +350,9 @@ class Graph():
                roles_count=2):
 
         graph = cls('bot', 'top')
-
-        def get_random_concept(iri):
-            return Concept(iri)
-
+        # add concepts
         for i in range(concepts_count):
-            concept = get_random_concept(str(i))
+            concept = Concept(i)
             graph.add_concept(concept)
 
         # add roles
