@@ -1,7 +1,9 @@
 from copy import deepcopy
 
+
 def is_satisfiable(kb, weights):
     return solve(kb, weights)['success']
+
 
 def solve(kb, weights):
     weighted_graph = WeightedGraph(kb, weights)
@@ -110,9 +112,10 @@ class WeightedGraph:
 
     def __init__(self, kb, weights):
         indexes = {j.iri: i for i, j in enumerate(kb.concepts())}
+        weights = [] if weights is None else weights
 
         self.order = len(kb.concepts())
-        self.infinity = max(weights) + 1
+        self.infinity = max(weights) + 1 if len(weights) > 0 else 1
 
         self.init = indexes[kb.init()]
         self.bottom = indexes[kb.bottom()]
@@ -120,15 +123,22 @@ class WeightedGraph:
 
         self.adj = [[] for _ in range(self.order)]
 
+        def get_weight(arrow):
+            pbox_id = arrow.pbox_id
+            if pbox_id >= len(weights):
+                raise Exception(
+                    f'Invalid PBox ID: {pbox_id}. ' +
+                    f'You could define {pbox_id - len(weights) + 1} more weights.')
+            if pbox_id < 0:
+                return self.infinity
+            return weights[pbox_id]
+
         for concept in kb.concepts():
             for a in concept.sup_arrows:
                 if a.is_derivated:
                     continue
 
-                if a.pbox_id < 0:
-                    weight = self.infinity
-                else:
-                    weight = weights[a.pbox_id]
+                weight = get_weight(a)
 
                 if weight < 0:
                     self.negative_arrows += [a.pbox_id]

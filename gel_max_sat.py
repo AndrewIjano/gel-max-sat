@@ -17,20 +17,22 @@ def main():
         print_gel_max_sat_problem(kb, weights, result)
     else:
         print(has_solution(result))
-    
-    kb.onto.save(file = "output", format = "rdfxml")
+
+    kb.onto.save(file='output', format='rdfxml')
+
 
 def has_solution(result):
     return result['success']
 
+
 def init_argparse():
     parser = argparse.ArgumentParser(
         description='Computes the GEL-MaxSAT algorithm in a weighted Graphic EL knowledge base.',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('file', nargs=1, type=str,
-                        help='path of the OWL file with the Graphic EL ontology')
+    parser.add_argument(
+        'file', nargs=1, type=str,
+        help='path of the OWL file with the Graphic EL ontology')
 
     parser.add_argument('-w', '--weights', nargs='*', type=int,
                         help='the finite weights of the knowledge base')
