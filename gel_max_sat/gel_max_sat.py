@@ -1,4 +1,5 @@
 from copy import deepcopy
+from collections import namedtuple
 
 
 def is_satisfiable(kb, weights):
@@ -8,11 +9,11 @@ def is_satisfiable(kb, weights):
 def solve(kb, weights):
     weighted_graph = WeightedGraph(kb, weights)
     cut_set = min_cut(weighted_graph)
-    if cut_set['is_weight_infinity']:
+    if cut_set.has_infinity_weight:
         return {'success': False}
 
     return {'success': True,
-            'prob_axiom_indexes': cut_set['prob_axiom_indexes']}
+            'prob_axiom_indexes': cut_set.prob_axiom_indexes}
 
 
 def min_cut(weighted_graph):
@@ -86,18 +87,20 @@ def dfs(residual_graph, s):
 
 
 def get_cut_set(weighted_graph, visited):
-    is_weight_infinity = False
+    has_infinity_weight = False
     prob_axiom_indexes = weighted_graph.negative_arrows
 
     for v, arrows in enumerate(weighted_graph.adj):
         for arrow in arrows:
             if visited[v] and not visited[arrow.vertex]:
                 if arrow.prob_axiom_index < 0:
-                    is_weight_infinity = True
+                    has_infinity_weight = True
                 prob_axiom_indexes += [arrow.prob_axiom_index]
 
-    return {'is_weight_infinity': is_weight_infinity,
-            'prob_axiom_indexes': prob_axiom_indexes}
+    CutSet = namedtuple('CutSet', [
+        'has_infinity_weight',
+        'prob_axiom_indexes'])
+    return CutSet(has_infinity_weight, prob_axiom_indexes)
 
 
 class WeightedGraph:
