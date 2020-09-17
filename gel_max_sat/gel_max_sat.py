@@ -131,7 +131,9 @@ class WeightedGraph:
             if pbox_id >= len(weights):
                 raise Exception(
                     f'Invalid PBox ID: {pbox_id}. ' +
-                    f'You could define {pbox_id - len(weights) + 1} more weights.')
+                    f'You could define {pbox_id - len(weights) + 1}' +
+                    'more weights.')
+
             if pbox_id < 0:
                 return self.infinity
             return weights[pbox_id]
