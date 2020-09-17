@@ -1,6 +1,5 @@
-import sys
 import gel_max_sat
-from gel_max_sat import KnowledgeBase, print_gel_max_sat_problem
+from gel_max_sat import KnowledgeBase, print_gel_max_sat_problem, save_solution
 import argparse
 
 
@@ -18,7 +17,8 @@ def main():
     else:
         print(has_solution(result))
 
-    kb.onto.save(file='output', format='rdfxml')
+    if has_solution(result):
+        save_solution(kb, result, args.output)
 
 
 def has_solution(result):
@@ -36,6 +36,9 @@ def init_argparse():
 
     parser.add_argument('-w', '--weights', nargs='*', type=int,
                         help='the finite weights of the knowledge base')
+
+    parser.add_argument('-o', '--output', nargs='?', default='solution.nt',
+                        type=str, help='path for the GEL-MaxSAT solution in N-Triples format')
 
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='prints the problem and solution')

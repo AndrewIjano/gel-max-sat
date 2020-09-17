@@ -64,11 +64,23 @@ def add_axioms_from_concepts(graph, owl_concepts):
             continue
 
         for sup_concept in sub_concept.is_a:
+            # ignore trivial axioms
+            if sup_concept == owl.Thing:
+                continue
             add_axiom(graph, sub_concept, sup_concept)
 
         for sup_concept in sub_concept.equivalent_to:
             add_axiom(graph, sub_concept, sup_concept)
             add_axiom(graph, sup_concept, sub_concept)
+
+        if not is_concept(sub_concept):
+            for sup_concept, role in get_individual_sup_and_role(sub_concept):
+                pbox_id = pbox_parser.get_id(sub_concept, sup_concept)
+                graph.add_axiom(
+                    sub_concept.iri,
+                    sup_concept.iri,
+                    role.iri,
+                    pbox_id)
 
 
 def add_axiom(graph, owl_sub_concept, owl_sup_concept):
@@ -109,12 +121,23 @@ def is_existential(owl_concept):
     return isinstance(owl_concept, owl.class_construct.Restriction)
 
 
+def is_concept(owl_concept):
+    return isinstance(owl_concept, owl.entity.ThingClass)
+
+
 def extract_role_iri(owl_existential_concept):
     return type(owl_existential_concept.property()).iri
 
 
 def extract_concept_iri(owl_existential_concept):
     return type(owl_existential_concept.value()).iri
+
+
+def get_individual_sup_and_role(owl_individual_concept):
+    for role in owl_individual_concept.get_properties():
+        sup_concepts = owl_individual_concept.__getattr__(role.name)
+        for sup_concept in sup_concepts:
+            yield sup_concept, role
 
 
 if __name__ == '__main__':

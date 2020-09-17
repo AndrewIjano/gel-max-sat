@@ -15,6 +15,9 @@ class KnowledgeBase:
     def concepts(self):
         return self.graph.concepts.values()
 
+    def is_isa(self, role):
+        return isinstance(role, gel.IsA)
+
     def is_existential(self, concept):
         return isinstance(concept, gel.ExistentialConcept)
 
