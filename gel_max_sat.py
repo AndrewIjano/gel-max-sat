@@ -27,7 +27,8 @@ def has_solution(result):
 
 def init_argparse():
     parser = argparse.ArgumentParser(
-        description='Computes the GEL-MaxSAT algorithm in a weighted Graphic EL knowledge base.',
+        description='Computes the GEL-MaxSAT algorithm'
+        + 'in a weighted Graphic EL knowledge base.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
@@ -37,8 +38,13 @@ def init_argparse():
     parser.add_argument('-w', '--weights', nargs='*', type=int,
                         help='the finite weights of the knowledge base')
 
-    parser.add_argument('-o', '--output', nargs='?', default='solution.nt',
-                        type=str, help='path for the GEL-MaxSAT solution in N-Triples format')
+    parser.add_argument(
+        '-o',
+        '--output',
+        nargs='?',
+        default='solution.nt',
+        type=str,
+        help='path for the GEL-MaxSAT solution in N-Triples format')
 
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='prints the problem and solution')
