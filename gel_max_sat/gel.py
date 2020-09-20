@@ -168,7 +168,11 @@ class Graph():
         # get Cj
         origin_concept_iri = concept.concept_iri
         # add '∃ri.Cj' ⊑ ∃ri.Cj
-        self.add_axiom(concept, origin_concept_iri, role_iri)
+        self.add_axiom(
+            concept,
+            origin_concept_iri,
+            role_iri,
+            is_immutable=True)
 
     def get_concept(self, concept):
         if not isinstance(concept, Concept):
@@ -236,12 +240,14 @@ class Graph():
         )
 
     def add_axiom(self, sub_concept, sup_concept, role,
-                  pbox_id=-1, is_derivated=False):
+                  pbox_id=-1, is_derivated=False, is_immutable=False):
         sub_concept = self.get_concept(sub_concept)
         sup_concept = self.get_concept(sup_concept)
         role = self.get_role(role)
 
-        sup_concept, role = self.remove_existential_body(sup_concept, role)
+        sup_concept, role = self.fix_existential_head_axiom(
+            sup_concept, role, is_immutable)
+
         arrow = Arrow(sup_concept, role, pbox_id, is_derivated)
         if not sub_concept.has_arrow(arrow):
             sub_concept.add_arrow(arrow)
@@ -256,22 +262,14 @@ class Graph():
             return True
         return False
 
-    def remove_existential_body(self, sup_concept, role):
+    def fix_existential_head_axiom(self, sup_concept, role, is_immutable):
         existential_concept = ExistentialConcept(role.iri, sup_concept.iri)
-        if existential_concept.iri in self.concepts:
+        if not is_immutable and existential_concept.iri in self.concepts:
             return self.get_concept(existential_concept.iri), self.is_a
         return sup_concept, role
 
     def add_pbox_axiom(self, pbox_id, axiom):
         self.pbox_axioms[pbox_id] = axiom
-
-    def check_link_to_existential_concept(self, axiom):
-        sub_concept, sup_concept, role = axiom
-        existential_concept = ExistentialConcept(role.iri, sup_concept.iri)
-        if existential_concept.iri in self.concepts:
-            existential_concept = self.get_concept(existential_concept.iri)
-            # TODO: check if is derivated and pbox_id implications
-            self.add_axiom(sub_concept, existential_concept, self.is_a)
 
     def check_new_derivations_from_axioms(self, axiom):
         sub_concept, sup_concept, role = axiom

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="urn:absolute:teste07#"
-     xml:base="urn:absolute:teste07"
+<rdf:RDF xmlns="urn:absolute:example#"
+     xml:base="urn:absolute:example"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
@@ -8,7 +8,7 @@
      xmlns:obda="https://w3id.org/obda/vocabulary#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:untitled-ontology-23="http://www.semanticweb.org/andrew/ontologies/2019/10/untitled-ontology-23#">
-    <owl:Ontology rdf:about="urn:absolute:teste07"/>
+    <owl:Ontology rdf:about="urn:absolute:example"/>
     
 
 
@@ -23,49 +23,49 @@
     
 
 
-    <!-- urn:absolute:teste07#hasCause -->
+    <!-- urn:absolute:example#hasCause -->
 
-    <owl:ObjectProperty rdf:about="urn:absolute:teste07#hasCause"/>
+    <owl:ObjectProperty rdf:about="urn:absolute:example#hasCause"/>
     
 
 
-    <!-- urn:absolute:teste07#hasSymptom -->
+    <!-- urn:absolute:example#hasSymptom -->
 
-    <owl:ObjectProperty rdf:about="urn:absolute:teste07#hasSymptom"/>
+    <owl:ObjectProperty rdf:about="urn:absolute:example#hasSymptom"/>
     
 
 
-    <!-- urn:absolute:teste07#isFatherOf -->
+    <!-- urn:absolute:example#isFatherOf -->
 
-    <owl:ObjectProperty rdf:about="urn:absolute:teste07#isFatherOf">
-        <rdfs:subPropertyOf rdf:resource="urn:absolute:teste07#isParentOf"/>
+    <owl:ObjectProperty rdf:about="urn:absolute:example#isFatherOf">
+        <rdfs:subPropertyOf rdf:resource="urn:absolute:example#isParentOf"/>
     </owl:ObjectProperty>
     
 
 
-    <!-- urn:absolute:teste07#isGrandfatherOf -->
+    <!-- urn:absolute:example#isGrandfatherOf -->
 
-    <owl:ObjectProperty rdf:about="urn:absolute:teste07#isGrandfatherOf">
+    <owl:ObjectProperty rdf:about="urn:absolute:example#isGrandfatherOf">
         <owl:propertyChainAxiom rdf:parseType="Collection">
-            <rdf:Description rdf:about="urn:absolute:teste07#isFatherOf"/>
-            <rdf:Description rdf:about="urn:absolute:teste07#isFatherOf"/>
+            <rdf:Description rdf:about="urn:absolute:example#isFatherOf"/>
+            <rdf:Description rdf:about="urn:absolute:example#isFatherOf"/>
         </owl:propertyChainAxiom>
     </owl:ObjectProperty>
     
 
 
-    <!-- urn:absolute:teste07#isParentOf -->
+    <!-- urn:absolute:example#isParentOf -->
 
-    <owl:ObjectProperty rdf:about="urn:absolute:teste07#isParentOf"/>
+    <owl:ObjectProperty rdf:about="urn:absolute:example#isParentOf"/>
     
 
 
-    <!-- urn:absolute:teste07#suspectOf -->
+    <!-- urn:absolute:example#suspectOf -->
 
-    <owl:ObjectProperty rdf:about="urn:absolute:teste07#suspectOf">
+    <owl:ObjectProperty rdf:about="urn:absolute:example#suspectOf">
         <owl:propertyChainAxiom rdf:parseType="Collection">
-            <rdf:Description rdf:about="urn:absolute:teste07#hasSymptom"/>
-            <rdf:Description rdf:about="urn:absolute:teste07#hasCause"/>
+            <rdf:Description rdf:about="urn:absolute:example#hasSymptom"/>
+            <rdf:Description rdf:about="urn:absolute:example#hasCause"/>
         </owl:propertyChainAxiom>
     </owl:ObjectProperty>
     
@@ -106,14 +106,14 @@
     
 
 
-    <!-- urn:absolute:teste07#Dengue -->
+    <!-- urn:absolute:example#Dengue -->
 
-    <owl:Class rdf:about="urn:absolute:teste07#Dengue">
+    <owl:Class rdf:about="urn:absolute:example#Dengue">
         <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Nothing"/>
-        <rdfs:subClassOf rdf:resource="urn:absolute:teste07#Disease"/>
+        <rdfs:subClassOf rdf:resource="urn:absolute:example#Disease"/>
     </owl:Class>
     <owl:Axiom>
-        <owl:annotatedSource rdf:resource="urn:absolute:teste07#Dengue"/>
+        <owl:annotatedSource rdf:resource="urn:absolute:example#Dengue"/>
         <owl:annotatedProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
         <owl:annotatedTarget rdf:resource="http://www.w3.org/2002/07/owl#Nothing"/>
         <rdfs:comment>#!pbox-id 2</rdfs:comment>
@@ -121,43 +121,30 @@
     
 
 
-    <!-- urn:absolute:teste07#DenguePatient -->
+    <!-- urn:absolute:example#Disease -->
 
-    <owl:Class rdf:about="urn:absolute:teste07#DenguePatient">
-        <owl:equivalentClass>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="urn:absolute:teste07#suspectOf"/>
-                <owl:someValuesFrom rdf:resource="urn:absolute:teste07#Dengue"/>
-            </owl:Restriction>
-        </owl:equivalentClass>
-    </owl:Class>
+    <owl:Class rdf:about="urn:absolute:example#Disease"/>
     
 
 
-    <!-- urn:absolute:teste07#Disease -->
+    <!-- urn:absolute:example#Fever -->
 
-    <owl:Class rdf:about="urn:absolute:teste07#Disease"/>
-    
-
-
-    <!-- urn:absolute:teste07#Fever -->
-
-    <owl:Class rdf:about="urn:absolute:teste07#Fever">
-        <rdfs:subClassOf rdf:resource="urn:absolute:teste07#Symptom"/>
+    <owl:Class rdf:about="urn:absolute:example#Fever">
+        <rdfs:subClassOf rdf:resource="urn:absolute:example#Symptom"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="urn:absolute:teste07#hasCause"/>
-                <owl:someValuesFrom rdf:resource="urn:absolute:teste07#Dengue"/>
+                <owl:onProperty rdf:resource="urn:absolute:example#hasCause"/>
+                <owl:someValuesFrom rdf:resource="urn:absolute:example#Dengue"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
     <owl:Axiom>
-        <owl:annotatedSource rdf:resource="urn:absolute:teste07#Fever"/>
+        <owl:annotatedSource rdf:resource="urn:absolute:example#Fever"/>
         <owl:annotatedProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
         <owl:annotatedTarget>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="urn:absolute:teste07#hasCause"/>
-                <owl:someValuesFrom rdf:resource="urn:absolute:teste07#Dengue"/>
+                <owl:onProperty rdf:resource="urn:absolute:example#hasCause"/>
+                <owl:someValuesFrom rdf:resource="urn:absolute:example#Dengue"/>
             </owl:Restriction>
         </owl:annotatedTarget>
         <rdfs:comment>#!pbox-id 0</rdfs:comment>
@@ -165,24 +152,24 @@
     
 
 
-    <!-- urn:absolute:teste07#FeverAndRash -->
+    <!-- urn:absolute:example#FeverAndRash -->
 
-    <owl:Class rdf:about="urn:absolute:teste07#FeverAndRash">
-        <rdfs:subClassOf rdf:resource="urn:absolute:teste07#Fever"/>
+    <owl:Class rdf:about="urn:absolute:example#FeverAndRash">
+        <rdfs:subClassOf rdf:resource="urn:absolute:example#Fever"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="urn:absolute:teste07#hasCause"/>
-                <owl:someValuesFrom rdf:resource="urn:absolute:teste07#Dengue"/>
+                <owl:onProperty rdf:resource="urn:absolute:example#hasCause"/>
+                <owl:someValuesFrom rdf:resource="urn:absolute:example#Dengue"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
     <owl:Axiom>
-        <owl:annotatedSource rdf:resource="urn:absolute:teste07#FeverAndRash"/>
+        <owl:annotatedSource rdf:resource="urn:absolute:example#FeverAndRash"/>
         <owl:annotatedProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
         <owl:annotatedTarget>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="urn:absolute:teste07#hasCause"/>
-                <owl:someValuesFrom rdf:resource="urn:absolute:teste07#Dengue"/>
+                <owl:onProperty rdf:resource="urn:absolute:example#hasCause"/>
+                <owl:someValuesFrom rdf:resource="urn:absolute:example#Dengue"/>
             </owl:Restriction>
         </owl:annotatedTarget>
         <rdfs:comment>#!pbox-id 1</rdfs:comment>
@@ -190,26 +177,46 @@
     
 
 
-    <!-- urn:absolute:teste07#Patient -->
+    <!-- urn:absolute:example#Monitored -->
 
-    <owl:Class rdf:about="urn:absolute:teste07#Patient">
+    <owl:Class rdf:about="urn:absolute:example#Monitored"/>
+    
+
+
+    <!-- urn:absolute:example#Patient -->
+
+    <owl:Class rdf:about="urn:absolute:example#Patient">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="urn:absolute:teste07#hasSymptom"/>
-                <owl:someValuesFrom rdf:resource="urn:absolute:teste07#Symptom"/>
+                <owl:onProperty rdf:resource="urn:absolute:example#hasSymptom"/>
+                <owl:someValuesFrom rdf:resource="urn:absolute:example#Symptom"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
     
 
 
-    <!-- urn:absolute:teste07#Symptom -->
+    <!-- urn:absolute:example#SuspectOfDengue -->
 
-    <owl:Class rdf:about="urn:absolute:teste07#Symptom">
+    <owl:Class rdf:about="urn:absolute:example#SuspectOfDengue">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="urn:absolute:example#suspectOf"/>
+                <owl:someValuesFrom rdf:resource="urn:absolute:example#Dengue"/>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="urn:absolute:example#Monitored"/>
+    </owl:Class>
+    
+
+
+    <!-- urn:absolute:example#Symptom -->
+
+    <owl:Class rdf:about="urn:absolute:example#Symptom">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="urn:absolute:teste07#hasCause"/>
-                <owl:someValuesFrom rdf:resource="urn:absolute:teste07#Disease"/>
+                <owl:onProperty rdf:resource="urn:absolute:example#hasCause"/>
+                <owl:someValuesFrom rdf:resource="urn:absolute:example#Disease"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -227,19 +234,19 @@
     
 
 
-    <!-- urn:absolute:teste07#john -->
+    <!-- urn:absolute:example#john -->
 
-    <owl:NamedIndividual rdf:about="urn:absolute:teste07#john">
-        <rdf:type rdf:resource="urn:absolute:teste07#Patient"/>
-        <hasSymptom rdf:resource="urn:absolute:teste07#s1"/>
+    <owl:NamedIndividual rdf:about="urn:absolute:example#john">
+        <rdf:type rdf:resource="urn:absolute:example#Patient"/>
+        <hasSymptom rdf:resource="urn:absolute:example#s1"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- urn:absolute:teste07#s1 -->
+    <!-- urn:absolute:example#s1 -->
 
-    <owl:NamedIndividual rdf:about="urn:absolute:teste07#s1">
-        <rdf:type rdf:resource="urn:absolute:teste07#FeverAndRash"/>
+    <owl:NamedIndividual rdf:about="urn:absolute:example#s1">
+        <rdf:type rdf:resource="urn:absolute:example#FeverAndRash"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 
