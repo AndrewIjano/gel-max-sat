@@ -1,18 +1,19 @@
 from copy import deepcopy
-from . import util
+from collections import namedtuple
+
 
 def is_satisfiable(kb, weights):
     return solve(kb, weights)['success']
 
-# @util.print_gel_max_sat_problem
+
 def solve(kb, weights):
     weighted_graph = WeightedGraph(kb, weights)
     cut_set = min_cut(weighted_graph)
-    if cut_set['is_weight_infinity']:
+    if cut_set.has_infinity_weight:
         return {'success': False}
 
     return {'success': True,
-            'prob_axiom_indexes': cut_set['prob_axiom_indexes']}
+            'prob_axiom_indexes': cut_set.prob_axiom_indexes}
 
 
 def min_cut(weighted_graph):
@@ -86,18 +87,20 @@ def dfs(residual_graph, s):
 
 
 def get_cut_set(weighted_graph, visited):
-    is_weight_infinity = False
+    has_infinity_weight = False
     prob_axiom_indexes = weighted_graph.negative_arrows
 
     for v, arrows in enumerate(weighted_graph.adj):
         for arrow in arrows:
             if visited[v] and not visited[arrow.vertex]:
                 if arrow.prob_axiom_index < 0:
-                    is_weight_infinity = True
+                    has_infinity_weight = True
                 prob_axiom_indexes += [arrow.prob_axiom_index]
 
-    return {'is_weight_infinity': is_weight_infinity,
-            'prob_axiom_indexes': prob_axiom_indexes}
+    CutSet = namedtuple('CutSet', [
+        'has_infinity_weight',
+        'prob_axiom_indexes'])
+    return CutSet(has_infinity_weight, prob_axiom_indexes)
 
 
 class WeightedGraph:
@@ -112,9 +115,10 @@ class WeightedGraph:
 
     def __init__(self, kb, weights):
         indexes = {j.iri: i for i, j in enumerate(kb.concepts())}
+        weights = [] if weights is None else weights
 
         self.order = len(kb.concepts())
-        self.infinity = max(weights) + 1
+        self.infinity = max(weights) + 1 if len(weights) > 0 else 1
 
         self.init = indexes[kb.init()]
         self.bottom = indexes[kb.bottom()]
@@ -122,15 +126,24 @@ class WeightedGraph:
 
         self.adj = [[] for _ in range(self.order)]
 
+        def get_weight(arrow):
+            pbox_id = arrow.pbox_id
+            if pbox_id >= len(weights):
+                raise Exception(
+                    f'Invalid PBox ID: {pbox_id}. ' +
+                    f'You could define {pbox_id - len(weights) + 1}' +
+                    'more weights.')
+
+            if pbox_id < 0:
+                return self.infinity
+            return weights[pbox_id]
+
         for concept in kb.concepts():
             for a in concept.sup_arrows:
                 if a.is_derivated:
                     continue
 
-                if a.pbox_id < 0:
-                    weight = self.infinity
-                else:
-                    weight = weights[a.pbox_id]
+                weight = get_weight(a)
 
                 if weight < 0:
                     self.negative_arrows += [a.pbox_id]

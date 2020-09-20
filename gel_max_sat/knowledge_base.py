@@ -15,6 +15,9 @@ class KnowledgeBase:
     def concepts(self):
         return self.graph.concepts.values()
 
+    def is_isa(self, role):
+        return isinstance(role, gel.IsA)
+
     def is_existential(self, concept):
         return isinstance(concept, gel.ExistentialConcept)
 
@@ -23,10 +26,12 @@ class KnowledgeBase:
 
     @classmethod
     def from_file(cls, file):
-        graph = owl.parser.parse(file)
+        onto, graph = owl.parser.parse(file)
         graph.complete()
 
-        return cls(graph)
+        kb = cls(graph)
+        kb.onto = onto
+        return kb
 
     @classmethod
     def random(cls, concepts_count=20,
