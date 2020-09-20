@@ -9,6 +9,34 @@
 pip3 install -r requirements.txt
 ```
 
+
+## Input format
+
+The input is an ontology in OWL format. This ontology can only contain axioms in the following form, where `C`, `D` are *basic concepts*, `r`, `s`, `t` are *roles* and `a`, `b` are *individuals*:
+
+- `C ⊑ D`
+- `C ⊑ ∃r.D`
+- `C ≡ D`
+- `C ≡ ∃r.D`
+- `C(a)`
+- `r(a, b)`
+- `r ⊑ s`
+- `r ∘ s ⊑ t`
+
+Due to technical limitations, axioms of the form `∃r.C ⊑ D` need to be represented as `"∃r.C" ≡ ∃r.C` and `"∃r.C" ⊑ D`. 
+
+
+Add a `rdfs:comment` to every uncertain axiom. There **must** be the header `#! pbox-id` in these comments, followed, in the next line, for its unique `id`.
+
+> ### For example: 
+> 
+> Supose some axiom `Ax0` is uncertain. 
+> You need to add one `rdfs:comment`s to this, with the content  
+> ```
+> #! pbox-id
+> 0 
+> ```
+
 ## Usage
 
 The `<inputfile>` will be your OWL file with probabilistic restrictions.
