@@ -1,145 +1,20 @@
 import random
-
-
-class Concept:
-    def __init__(self, iri):
-        self.iri = iri
-        self.sup_arrows = []
-        self.sub_arrows = []
-        self._is_empty = False
-        self.reaches = {self}
-
-    def has_arrow(self, arrow):
-        return arrow in self.sup_arrows
-
-    def add_arrow(self, sup_arrow):
-        sup_concept = sup_arrow.concept
-        sub_arrow = sup_arrow.copy_from(self)
-        if not self.has_arrow(sup_arrow):
-            self.sup_arrows += [sup_arrow]
-            sup_concept.sub_arrows += [sub_arrow]
-
-    def is_a(self):
-        return (a.concept for a in self.sup_arrows
-                if isinstance(a.role, IsA) and a.pbox_id < 0)
-
-    def sup_concepts(self, role=None):
-        return (a.concept for a in self.sup_arrows
-                if role is not None and a.role == role)
-
-    def sup_concepts_with_roles(self, without=None):
-        return ((a.concept, a.role) for a in self.sup_arrows
-                if a.role != without)
-
-    def sub_concepts(self, role=None):
-        return (a.concept for a in self.sub_arrows
-                if role is not None and a.role == role)
-
-    def sub_concepts_with_roles(self, without=None):
-        return ((a.concept, a.role) for a in self.sub_arrows
-                if a.role != without)
-
-    def is_empty(self):
-        visited = set()
-
-        def _is_empty(concept):
-            if concept._is_empty:
-                return True
-            visited.add(concept)
-            reached = False
-            for sup_concept in concept.is_a():
-                if sup_concept not in visited:
-                    reached = reached or _is_empty(sup_concept)
-            concept._is_empty = reached
-        return _is_empty(self)
-
-    def sup_concepts_reached(self, role=None):
-        visited = set()
-
-        def _sup_concepts_reached(concept):
-            visited.add(concept)
-            yield concept
-            for sup_concept in concept.sup_concepts(role=role):
-                if sup_concept not in visited:
-                    yield from _sup_concepts_reached(sup_concept)
-
-        yield from _sup_concepts_reached(self)
-
-    def sub_concepts_reach(self, role=None):
-        visited = set()
-
-        def _sub_concepts_reached(concept):
-            visited.add(concept)
-            yield concept
-            for sub_concept in concept.sub_concepts(role=role):
-                if sub_concept not in visited:
-                    yield from _sub_concepts_reached(sub_concept)
-
-        yield from _sub_concepts_reached(self)
-
-
-class EmptyConcept(Concept):
-    def __init__(self, iri):
-        super().__init__(iri)
-        self._is_empty = True
-
-
-class IndividualConcept(Concept):
-    def __init__(self, iri):
-        super().__init__(iri)
-
-
-class ExistentialConcept(Concept):
-    def __init__(self, role_iri, concept_iri):
-        self.concept_iri = concept_iri
-        self.role_iri = role_iri
-        super().__init__(f'{role_iri}.{concept_iri}')
-
-
-class Arrow():
-    def __init__(self, concept, role, pbox_id=-1, is_derivated=False):
-        self.concept = concept
-        self.role = role
-        self.pbox_id = pbox_id
-        self.is_derivated = is_derivated
-
-    def copy_from(self, concept):
-        return Arrow(concept, self.role, self.pbox_id, self.is_derivated)
-
-    def __eq__(self, other):
-        if not isinstance(other, Arrow):
-            return NotImplemented
-
-        return (self.concept == other.concept and
-                self.role == other.role)
-
-
-class Role():
-    def __init__(self, iri):
-        self.iri = iri
-        self.axioms = []
-
-    def add_axiom(self, sub_concept, sup_concept):
-        self.axioms += [(sub_concept, sup_concept)]
-
-
-class IsA(Role):
-    def __init__(self):
-        super().__init__('is a')
-
-
-class ArtificialRole(Role):
-    def __init__(self, dual_role_iri, concept_iri):
-        self.dual_role_iri = dual_role_iri
-        self.concept_iri = concept_iri
-        super().__init__(f'{dual_role_iri}.{concept_iri}')
+from .concepts import (
+    Concept,
+    EmptyConcept,
+    GeneralConcept,
+    ExistentialConcept,
+    IndividualConcept,
+)
+from .roles import Role, IsA
+from .arrows import Arrow
 
 
 class Graph():
     def __init__(self, empty_concept_iri, general_concept_iri):
         self.init = Concept('init')
         self.bot = EmptyConcept(empty_concept_iri)
-        self.top = Concept(general_concept_iri)
+        self.top = GeneralConcept(general_concept_iri)
 
         self.is_a = IsA()
 
