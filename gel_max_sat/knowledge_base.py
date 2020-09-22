@@ -13,7 +13,7 @@ class KnowledgeBase:
         return self.graph.bot.iri
 
     def concepts(self):
-        return self.graph.concepts.values()
+        return self.graph.concepts
 
     @classmethod
     def from_file(cls, file):

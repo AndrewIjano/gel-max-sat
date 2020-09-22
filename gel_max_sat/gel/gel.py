@@ -18,24 +18,49 @@ class Graph():
 
         self.is_a = IsA()
 
-        self.concepts = {c.iri: c for c in [self.init, self.bot, self.top]}
-        self.roles = {r.iri: r for r in [self.is_a]}
-        self.role_inclusions = {}
+        self._concepts = {c.iri: c for c in [self.init, self.bot, self.top]}
+        self._roles = {r.iri: r for r in [self.is_a]}
 
+        self.role_inclusions = {}
         self.pbox_axioms = {}
+
         self.init.add_arrow(Arrow(self.top, self.is_a))
 
+    @property
     def has_path_init_to_bot(self):
         return self.init.is_empty()
 
+    @property
+    def concepts(self):
+        return list(self._concepts.values())
+
+    @property
+    def existential_concepts(self):
+        return (concept for concept in self.concepts
+                if isinstance(concept, ExistentialConcept))
+
+    @property
+    def individuals(self):
+        return (concept for concept in self.concepts
+                if isinstance(concept, IndividualConcept))
+
+    @property
+    def roles(self):
+        return list(self._roles.values())
+
     def add_concept(self, concept):
-        self.concepts[concept.iri] = concept
+        self._concepts[concept.iri] = concept
 
         if isinstance(concept, IndividualConcept):
             self.init.add_arrow(Arrow(concept, self.is_a))
 
         if isinstance(concept, ExistentialConcept):
             self.link_existential_concept(concept)
+
+    def get_concept(self, concept):
+        if not isinstance(concept, Concept):
+            return self._concepts[concept]
+        return concept
 
     def link_existential_concept(self, concept):
         # get ri
@@ -49,24 +74,13 @@ class Graph():
             role_iri,
             is_immutable=True)
 
-    def get_concept(self, concept):
-        if not isinstance(concept, Concept):
-            return self.concepts[concept]
-        return concept
-
-    def get_concepts(self):
-        return list(self.concepts.values())
-
     def add_role(self, role):
-        self.roles[role.iri] = role
+        self._roles[role.iri] = role
 
     def get_role(self, role):
         if not isinstance(role, Role):
-            return self.roles[role]
+            return self._roles[role]
         return role
-
-    def get_roles(self):
-        return list(self.roles.values())
 
     def add_chained_role_inclusion(self, sub_roles_iri, sup_role_iri):
         sub_role1 = self.get_role(sub_roles_iri[0])
@@ -105,12 +119,10 @@ class Graph():
             axioms += self.add_random_axiom(pbox_id=pbox_id)
 
     def add_random_axiom(self, pbox_id=-1):
-        roles = self.get_roles()
-
         return self.add_axiom(
             random.choice(self.real_concepts).iri,
             random.choice(self.real_concepts).iri,
-            random.choice(roles).iri,
+            random.choice(self.roles).iri,
             pbox_id=pbox_id
         )
 
@@ -171,14 +183,6 @@ class Graph():
             for k in self.role_inclusions.get((role.iri, j.iri), []):
                 self.add_axiom(sub_concept, d, k, is_derivated=True)
 
-    def existential_concepts(self):
-        return (concept for concept in self.concepts.values()
-                if isinstance(concept, ExistentialConcept))
-
-    def individuals(self):
-        return (concept for concept in self.concepts.values()
-                if isinstance(concept, IndividualConcept))
-
     def complete(self):
         def concepts_connected_by_existential(ri_e):
             i = self.get_role(ri_e.role_iri)
@@ -189,7 +193,7 @@ class Graph():
 
         def complete_rule_3():
             ok = False
-            for ri_e in self.existential_concepts():
+            for ri_e in self.existential_concepts:
                 for c, d in concepts_connected_by_existential(ri_e):
                     ok = ok or self.add_axiom(
                         c, d, self.is_a, is_derivated=True)
@@ -201,7 +205,7 @@ class Graph():
 
         def complete_rule_5():
             ok = False
-            for a in self.individuals():
+            for a in self.individuals:
                 for c in a.sub_concepts_reach():
                     for d in a.sub_concepts_reach():
                         if is_reached_by_init(c, d):
@@ -234,7 +238,7 @@ class Graph():
 
         # add certain axioms randomly
         certain_axioms_count = max(0, axioms_count - uncertain_axioms_count)
-        graph.real_concepts = [c for c in graph.get_concepts()]
+        graph.real_concepts = [c for c in graph.concepts]
         graph.add_random_axioms(certain_axioms_count)
 
         # add uncertain axioms randomly
