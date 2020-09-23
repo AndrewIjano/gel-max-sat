@@ -58,6 +58,7 @@ class Concept:
                 if sup_concept not in visited:
                     reached = reached or _is_empty(sup_concept)
             concept._is_empty = reached
+            return concept._is_empty
         return _is_empty(self)
 
     def sup_concepts_reached(self, role=None):

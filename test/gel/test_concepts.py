@@ -39,3 +39,8 @@ def test_same_values_arrow_equal(concept_with_arrows):
     arrow = arrows[0]
     arrow2 = gel.Arrow(arrow.concept, arrow.role)
     assert concept.has_arrow(arrow2)
+
+
+def test_concept_has_name(concept_with_arrows):
+    concept, _ = concept_with_arrows
+    assert concept.name == 'a'

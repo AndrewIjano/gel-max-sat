@@ -36,13 +36,13 @@ class Graph():
 
     @property
     def existential_concepts(self):
-        return (concept for concept in self.concepts
-                if isinstance(concept, ExistentialConcept))
+        return [concept for concept in self.concepts
+                if isinstance(concept, ExistentialConcept)]
 
     @property
     def individuals(self):
-        return (concept for concept in self.concepts
-                if isinstance(concept, IndividualConcept))
+        return [concept for concept in self.concepts
+                if isinstance(concept, IndividualConcept)]
 
     @property
     def roles(self):
@@ -58,9 +58,11 @@ class Graph():
             self.link_existential_concept(concept)
 
     def get_concept(self, concept):
-        if not isinstance(concept, Concept):
-            return self._concepts[concept]
-        return concept
+        if isinstance(concept, Concept):
+            return concept
+        if concept not in self._concepts:
+            raise ValueError(f'Concept missing: {concept}')
+        return self._concepts[concept]
 
     def link_existential_concept(self, concept):
         # get ri
@@ -78,9 +80,11 @@ class Graph():
         self._roles[role.iri] = role
 
     def get_role(self, role):
-        if not isinstance(role, Role):
-            return self._roles[role]
-        return role
+        if isinstance(role, Role):
+            return role
+        if role not in self._roles:
+            raise ValueError(f'Role missing: {role}')
+        return self._roles[role]
 
     def add_chained_role_inclusion(self, sub_roles_iri, sup_role_iri):
         sub_role1 = self.get_role(sub_roles_iri[0])
@@ -151,7 +155,7 @@ class Graph():
 
     def fix_existential_head_axiom(self, sup_concept, role, is_immutable):
         existential_concept = ExistentialConcept(role.iri, sup_concept.iri)
-        if not is_immutable and existential_concept.iri in self.concepts:
+        if not is_immutable and existential_concept.iri in self._concepts:
             return self.get_concept(existential_concept.iri), self.is_a
         return sup_concept, role
 
