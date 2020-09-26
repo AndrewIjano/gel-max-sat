@@ -14,6 +14,9 @@ class Role():
     def name(self):
         return iri.clear(self.iri)
 
+    def __repr__(self):
+        return f'Role({self.iri})'
+
 
 class IsA(Role):
     def __init__(self):

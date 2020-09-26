@@ -18,6 +18,12 @@ class Arrow():
         return (self.concept == other.concept and
                 self.role == other.role)
 
+    def __repr__(self):
+        return f'Arrow({repr(self.concept)},'\
+            + f' {repr(self.role)},'\
+            + f' {self.pbox_id},'\
+            + f' {self.is_derivated})'
+
     @property
     def name(self):
         is_isa = isinstance(self.role, roles.IsA)

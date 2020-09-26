@@ -16,6 +16,9 @@ class Concept:
     def name(self):
         return iri.clear(self.iri)
 
+    def __repr__(self):
+        return f'Concept({self.iri})'
+
     def has_arrow(self, arrow):
         return arrow in self.sup_arrows
 

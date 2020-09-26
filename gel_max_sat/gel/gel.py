@@ -99,9 +99,9 @@ class Graph():
 
     def check_new_derivations_from_chained_role_inclusions(
             self, sub_role1, sub_role2, sup_role):
-        for c, d_prime in sub_role1.axioms():
+        for c, d_prime in sub_role1.axioms:
             for d in d_prime.sup_concepts(sub_role2):
-                self.add_axiom(c.iri, d.iri, sup_role.iri, is_derivated=True)
+                self.derive_axiom(c, d, sup_role)
 
     def add_role_inclusion(self, sub_role_iri, sup_role_iri):
         sub_role = self.get_role(sub_role_iri)
@@ -113,8 +113,8 @@ class Graph():
         self.check_new_derivations_from_role_inclusions(sub_role, sup_role)
 
     def check_new_derivations_from_role_inclusions(self, sub_role, sup_role):
-        for c, d in sub_role.axioms():
-            self.add_axiom(c, d, sup_role, is_derivated=True)
+        for sub_concept, sup_concept in sub_role.axioms:
+            self.derive_axiom(sub_concept, sup_concept, sup_role)
 
     def add_random_axioms(self, axioms_count, is_uncertain=False):
         axioms = 0
@@ -130,6 +130,10 @@ class Graph():
             pbox_id=pbox_id
         )
 
+    def derive_axiom(self, sub_concept, sup_concept, role):
+        return self.add_axiom(sub_concept, sup_concept,
+                              role, is_derivated=True)
+
     def add_axiom(self, sub_concept, sup_concept, role,
                   pbox_id=-1, is_derivated=False, is_immutable=False):
         sub_concept = self.get_concept(sub_concept)
@@ -143,6 +147,7 @@ class Graph():
         if not sub_concept.has_arrow(arrow):
             sub_concept.add_arrow(arrow)
 
+            role.add_axiom(sub_concept, sup_concept)
             axiom = (sub_concept, sup_concept, role)
             if pbox_id >= 0:
                 self.add_pbox_axiom(pbox_id, axiom)
@@ -163,29 +168,51 @@ class Graph():
         self.pbox_axioms[pbox_id] = axiom
 
     def check_new_derivations_from_axioms(self, axiom):
-        sub_concept, sup_concept, role = axiom
+        _, _, role = axiom
         if role == self.is_a:
-            for c, i in sup_concept.sup_concepts_with_roles(without=self.is_a):
-                self.add_axiom(sup_concept, c, i, is_derivated=True)
-            return
+            self.check_new_derivation_from_isa_axioms(axiom)
+        else:
+            self.check_new_derivation_from_role_axioms(axiom)
+
+    def check_new_derivation_from_isa_axioms(self, axiom):
+        sub_concept, sup_concept, _ = axiom
+        for c, i in sub_concept.sub_concepts_with_roles(without=self.is_a):
+            self.derive_axiom(c, sup_concept, i)
+
+        for d, i in sup_concept.sup_concepts_with_roles(without=self.is_a):
+            self.derive_axiom(sub_concept, d, i)
+
+    def check_new_derivation_from_role_axioms(self, axiom):
+        sub_concept, sup_concept, role = axiom
         for c in sub_concept.sub_concepts(role=self.is_a):
-            self.add_axiom(c, sub_concept, role, is_derivated=True)
+            self.derive_axiom(c, sup_concept, role)
+
+        for d in sup_concept.sup_concepts(role=self.is_a):
+            self.derive_axiom(sub_concept, d, role)
 
     def check_new_paths_to_bot(self, axiom):
         sub_concept, sup_concept, role = axiom
         if sup_concept.is_empty() and role != self.is_a:
             sub_concept._is_empty = True
-            is_a = self.is_a
-            self.add_axiom(sub_concept, sup_concept, is_a, is_derivated=True)
+            self.derive_axiom(sub_concept, sup_concept, self.is_a)
+
+        if sup_concept.is_empty() and role == self.is_a:
+            for c, _ in sub_concept.sup_concepts_with_roles(without=self.is_a):
+                if c.is_empty():
+                    self.derive_axiom(sub_concept, c, self.is_a)
 
     def check_new_derivations_from_axioms_and_roles(self, axiom):
         sub_concept, sup_concept, role = axiom
-        for _ in self.role_inclusions.get(role.iri, []):
-            self.add_axiom(sub_concept, sup_concept, role, is_derivated=True)
+        for sup_role in self.role_inclusions.get(role.iri, []):
+            self.derive_axiom(sub_concept, sup_concept, sup_role)
 
-        for d, j in sup_concept.sub_concepts_with_roles(without=self.is_a):
+        for d, j in sup_concept.sup_concepts_with_roles(without=self.is_a):
             for k in self.role_inclusions.get((role.iri, j.iri), []):
-                self.add_axiom(sub_concept, d, k, is_derivated=True)
+                self.derive_axiom(sub_concept, d, k)
+
+        for c, j in sub_concept.sub_concepts_with_roles(without=self.is_a):
+            for k in self.role_inclusions.get((j.iri, role.iri), []):
+                self.derive_axiom(c, sup_concept, k)
 
     def complete(self):
         def concepts_connected_by_existential(ri_e):
@@ -199,8 +226,7 @@ class Graph():
             ok = False
             for ri_e in self.existential_concepts:
                 for c, d in concepts_connected_by_existential(ri_e):
-                    ok = ok or self.add_axiom(
-                        c, d, self.is_a, is_derivated=True)
+                    ok = ok or self.derive_axiom(c, d, self.is_a)
             return ok
 
         def is_reached_by_init(c, d):
@@ -213,8 +239,7 @@ class Graph():
                 for c in a.sub_concepts_reach():
                     for d in a.sub_concepts_reach():
                         if is_reached_by_init(c, d):
-                            ok = ok or self.add_axiom(
-                                c, d, self.is_a, is_derivated=True)
+                            ok = ok or self.derive_axiom(c, d, self.is_a)
             return ok
 
         ok = False
