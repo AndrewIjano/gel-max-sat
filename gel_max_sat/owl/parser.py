@@ -96,7 +96,8 @@ def get_sub_concept_iri(graph, owl_sub_concept):
     sub_concept = owl_sub_concept
     if is_existential(owl_sub_concept):
         sub_concept = create_existential_concept(owl_sub_concept)
-        graph.add_concept(sub_concept)
+        if sub_concept not in graph.concepts:
+            graph.add_concept(sub_concept)
     return sub_concept.iri
 
 

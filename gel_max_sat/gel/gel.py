@@ -55,6 +55,7 @@ class Graph():
             self.init.add_arrow(Arrow(concept, self.is_a))
 
         if isinstance(concept, ExistentialConcept):
+            self.fix_previous_existential_head_axioms(concept)
             self.link_existential_concept(concept)
 
     def get_concept(self, concept):
@@ -63,6 +64,29 @@ class Graph():
         if concept not in self._concepts:
             raise ValueError(f'Concept missing: {concept}')
         return self._concepts[concept]
+
+    def fix_previous_existential_head_axioms(self, existential_concept):
+        role = self.get_role(existential_concept.role_iri)
+        origin_concept = self.get_concept(existential_concept.concept_iri)
+
+        def outdated_sub_concepts():
+            for sub_concept, sup_concept in role.axioms:
+                if sup_concept == origin_concept:
+                    yield sub_concept
+
+        def new_role_axioms():
+            axioms = []
+            for sub_concept, sup_concept in role.axioms:
+                if sup_concept != origin_concept:
+                    axioms += [(sub_concept, sup_concept)]
+            return axioms
+
+        for sub_concept in outdated_sub_concepts():
+            arrow = Arrow(origin_concept, role)
+            sub_concept.remove_arrow(arrow)
+            self.add_axiom(sub_concept, existential_concept, self.is_a)
+
+        role.axioms = new_role_axioms()
 
     def link_existential_concept(self, concept):
         # get ri
@@ -215,20 +239,6 @@ class Graph():
                 self.derive_axiom(c, sup_concept, k)
 
     def complete(self):
-        def concepts_connected_by_existential(ri_e):
-            i = self.get_role(ri_e.role_iri)
-            e = self.get_concept(ri_e.concept_iri)
-            for c in e.sub_concepts(role=i):
-                for d in ri_e.sup_concepts(role=self.is_a):
-                    yield c, d
-
-        def complete_rule_3():
-            ok = False
-            for ri_e in self.existential_concepts:
-                for c, d in concepts_connected_by_existential(ri_e):
-                    ok = ok or self.derive_axiom(c, d, self.is_a)
-            return ok
-
         def is_reached_by_init(c, d):
             reached_by_init = self.init.sup_concepts_reached()
             return c in reached_by_init and d in reached_by_init
@@ -244,9 +254,7 @@ class Graph():
 
         ok = False
         while not ok:
-            ok = True
-            ok = ok and not complete_rule_3()
-            ok = ok and not complete_rule_5()
+            ok = True and not complete_rule_5()
 
     @classmethod
     def random(cls,

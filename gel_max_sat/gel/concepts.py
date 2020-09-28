@@ -29,6 +29,13 @@ class Concept:
             self.sup_arrows += [sup_arrow]
             sup_concept.sub_arrows += [sub_arrow]
 
+    def remove_arrow(self, sup_arrow):
+        sup_concept = sup_arrow.concept
+        sub_arrow = sup_arrow.copy_from(self)
+        if self.has_arrow(sup_arrow):
+            self.sup_arrows.remove(sup_arrow)
+            sup_concept.sub_arrows.remove(sub_arrow)
+
     def is_a(self):
         return (a.concept for a in self.sup_arrows
                 if isinstance(a.role, roles.IsA) and a.pbox_id < 0)

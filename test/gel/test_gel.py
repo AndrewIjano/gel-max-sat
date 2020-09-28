@@ -266,7 +266,6 @@ def test_graph_completion_rule_3_axiom_first(three_concept_graph):
         is_derivated=True
     )
 
-    # TODO:solve this problem 
     concept_c = graph.get_concept('C')
     assert concept_c.has_arrow(arrow)
 
