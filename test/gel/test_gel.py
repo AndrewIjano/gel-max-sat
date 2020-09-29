@@ -180,12 +180,13 @@ def test_graph_add_axiom():
 
 @pytest.mark.timeout(1)
 def test_graph_fix_existential_head_axiom(simple_graph):
-    concept_D = gel.Concept('D')
-    simple_graph.add_concept(concept_D)
+    concept_d = gel.Concept('D')
+    simple_graph.add_concept(concept_d)
     existential_concept = simple_graph.get_concept('r.C')
-    assert existential_concept not in concept_D.is_a()
+
+    assert existential_concept not in concept_d.is_a()
     simple_graph.add_axiom('D', 'C', 'r')
-    assert existential_concept in concept_D.is_a()
+    assert existential_concept in concept_d.is_a()
 
 
 @pytest.mark.timeout(1)
@@ -283,7 +284,7 @@ def test_graph_completion_rule_2_role_first(three_concept_graph):
 
 
 @pytest.mark.timeout(1)
-def test_graph_completion_rule_3(three_concept_graph):
+def test_graph_completion_rule_3_concept_first(three_concept_graph):
     graph = three_concept_graph
     graph.add_concept(gel.ExistentialConcept('i', 'D'))
 
