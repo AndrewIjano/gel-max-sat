@@ -1,7 +1,7 @@
 from . import roles
 
 
-class Arrow():
+class Arrow:
     def __init__(self, concept, role, pbox_id=-1, is_derivated=False):
         self.concept = concept
         self.role = role
@@ -18,11 +18,14 @@ class Arrow():
         return (self.concept == other.concept and
                 self.role == other.role)
 
+    def __hash__(self):
+        return hash((self.concept.iri, self.role.iri))
+
     def __repr__(self):
-        return f'Arrow({repr(self.concept)},'\
-            + f' {repr(self.role)},'\
-            + f' {self.pbox_id},'\
-            + f' {self.is_derivated})'
+        return f'Arrow({repr(self.concept)},' \
+               + f' {repr(self.role)},' \
+               + f' {self.pbox_id},' \
+               + f' {self.is_derivated})'
 
     @property
     def name(self):

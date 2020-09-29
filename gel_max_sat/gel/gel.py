@@ -1,4 +1,5 @@
 import random
+from queue import Queue
 from .concepts import (
     Concept,
     EmptyConcept,
@@ -9,8 +10,14 @@ from .concepts import (
 from .roles import Role, IsA
 from .arrows import Arrow
 
+# class Axiom:
+#     def __init__(self, graph, sub_concept, sup_concept, role):
+#         self.sub_concept = graph.get_concept(sub_concept)
+#         self.sup_concept = graph.get_concept(sup_concept)
+#         self.role = graph.get_role(role)
+#
 
-class Graph():
+class Graph:
     def __init__(self, empty_concept_iri, general_concept_iri):
         self.init = Concept('init')
         self.bot = EmptyConcept(empty_concept_iri)
@@ -25,6 +32,9 @@ class Graph():
         self.pbox_axioms = {}
 
         self.init.add_arrow(Arrow(self.top, self.is_a))
+
+        self.derivation_queue = Queue()
+        self.derivations = 0
 
     @property
     def has_path_init_to_bot(self):
@@ -155,8 +165,16 @@ class Graph():
         )
 
     def derive_axiom(self, sub_concept, sup_concept, role):
-        return self.add_axiom(sub_concept, sup_concept,
-                              role, is_derivated=True)
+        arrow = Arrow(sup_concept, role, -1, True)
+        if not sub_concept.has_arrow(arrow):
+            axiom = (sub_concept, sup_concept, role)
+            self.derivation_queue.put(axiom)
+            self.derivations += 1
+
+    def derive_axioms(self):
+        while not self.derivation_queue.empty():
+            axiom = self.derivation_queue.get()
+            self.add_axiom(*axiom, is_derivated=True)
 
     def add_axiom(self, sub_concept, sup_concept, role,
                   pbox_id=-1, is_derivated=False, is_immutable=False):
@@ -238,24 +256,22 @@ class Graph():
             for k in self.role_inclusions.get((j.iri, role.iri), []):
                 self.derive_axiom(c, sup_concept, k)
 
-    def complete(self):
+    def check_equivalent_concepts(self):
         def is_reached_by_init(c, d):
             reached_by_init = list(self.init.sup_concepts_reached())
             return c in reached_by_init and d in reached_by_init
 
-        def complete_rule_5():
-            is_finished = False
-            for a in self.individuals:
-                for c in a.sub_concepts_reach():
-                    for d in a.sub_concepts_reach():
-                        if is_reached_by_init(c, d):
-                            derived = self.derive_axiom(c, d, self.is_a)
-                            is_finished = is_finished or derived
-            return is_finished
+        for a in self.individuals:
+            for c in a.sub_concepts_reach():
+                for d in a.sub_concepts_reach():
+                    if is_reached_by_init(c, d):
+                        self.derive_axiom(c, d, self.is_a)
 
-        is_finished = False
-        while not is_finished:
-            is_finished = not complete_rule_5()
+    def complete(self):
+        while not self.derivation_queue.empty():
+            self.derive_axioms()
+            self.check_equivalent_concepts()
+        print(f'({self.derivations})', end=' ')
 
     @classmethod
     def random(cls,
