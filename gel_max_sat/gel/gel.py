@@ -240,21 +240,22 @@ class Graph():
 
     def complete(self):
         def is_reached_by_init(c, d):
-            reached_by_init = self.init.sup_concepts_reached()
+            reached_by_init = list(self.init.sup_concepts_reached())
             return c in reached_by_init and d in reached_by_init
 
         def complete_rule_5():
-            ok = False
+            is_finished = False
             for a in self.individuals:
                 for c in a.sub_concepts_reach():
                     for d in a.sub_concepts_reach():
                         if is_reached_by_init(c, d):
-                            ok = ok or self.derive_axiom(c, d, self.is_a)
-            return ok
+                            derived = self.derive_axiom(c, d, self.is_a)
+                            is_finished = is_finished or derived
+            return is_finished
 
-        ok = False
-        while not ok:
-            ok = True and not complete_rule_5()
+        is_finished = False
+        while not is_finished:
+            is_finished = not complete_rule_5()
 
     @classmethod
     def random(cls,

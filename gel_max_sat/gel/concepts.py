@@ -40,17 +40,17 @@ class Concept:
         return (a.concept for a in self.sup_arrows
                 if isinstance(a.role, roles.IsA) and a.pbox_id < 0)
 
-    def sup_concepts(self, role=None):
+    def sup_concepts(self, role='all'):
         return (a.concept for a in self.sup_arrows
-                if role is not None and a.role == role)
+                if role == 'all' or a.role == role)
 
     def sup_concepts_with_roles(self, without=None):
         return ((a.concept, a.role) for a in self.sup_arrows
                 if a.role != without)
 
-    def sub_concepts(self, role=None):
+    def sub_concepts(self, role='all'):
         return (a.concept for a in self.sub_arrows
-                if role is not None and a.role == role)
+                if role == 'all' or a.role == role)
 
     def sub_concepts_with_roles(self, without=None):
         return ((a.concept, a.role) for a in self.sub_arrows
@@ -71,7 +71,7 @@ class Concept:
             return concept._is_empty
         return _is_empty(self)
 
-    def sup_concepts_reached(self, role=None):
+    def sup_concepts_reached(self, role='all'):
         visited = set()
 
         def _sup_concepts_reached(concept):
@@ -83,17 +83,17 @@ class Concept:
 
         yield from _sup_concepts_reached(self)
 
-    def sub_concepts_reach(self, role=None):
+    def sub_concepts_reach(self, role='all'):
         visited = set()
 
-        def _sub_concepts_reached(concept):
+        def _sub_concepts_reach(concept):
             visited.add(concept)
             yield concept
             for sub_concept in concept.sub_concepts(role=role):
                 if sub_concept not in visited:
-                    yield from _sub_concepts_reached(sub_concept)
+                    yield from _sub_concepts_reach(sub_concept)
 
-        yield from _sub_concepts_reached(self)
+        yield from _sub_concepts_reach(self)
 
 
 class EmptyConcept(Concept):

@@ -61,6 +61,32 @@ def graph_pre_chained_role_inclusion():
     return graph
 
 
+@pytest.fixture
+def graph_complete_rule_5():
+    graph = gel.Graph('bot', 'top')
+    graph.add_concept(gel.Concept('C'))
+    graph.add_concept(gel.Concept('D'))
+    graph.add_concept(gel.Concept('C1'))
+    graph.add_concept(gel.Concept('C2'))
+    graph.add_axiom('C', 'C1', graph.is_a)
+    graph.add_axiom('C1', 'C2', graph.is_a)
+
+    graph.add_concept(gel.Concept('D1'))
+    graph.add_axiom('D', 'D1', graph.is_a)
+
+    graph.add_role(gel.Role('i'))
+    graph.add_concept(gel.Concept('D-1'))
+    graph.add_axiom('D-1', 'D', 'i')
+
+    graph.add_concept(gel.IndividualConcept('a'))
+
+    graph.add_axiom('C2', 'a', graph.is_a)
+    graph.add_axiom('D1', 'a', graph.is_a)
+    graph.add_axiom('a', 'C', graph.is_a)
+    graph.add_axiom('a', 'D-1', graph.is_a)
+    return graph
+
+
 def test_graph_has_no_path_init_to_bot(simple_graph):
     assert not simple_graph.has_path_init_to_bot
 
@@ -324,6 +350,21 @@ def test_graph_completion_rule_4_bot_connected_far(three_concept_graph):
     graph.add_axiom('E', 'bot', graph.is_a)
     assert concept_c.has_arrow(arrow)
     assert concept_c.is_empty()
+
+
+def test_graph_completion_rule_5(graph_complete_rule_5):
+    graph = graph_complete_rule_5
+
+    concept_c = graph.get_concept('C')
+    concept_d = graph.get_concept('D')
+    arrow_cd = gel.Arrow(concept_d, graph.is_a, is_derivated=True)
+    arrow_dc = gel.Arrow(concept_c, graph.is_a, is_derivated=True)
+
+    assert not concept_c.has_arrow(arrow_cd)
+    assert not concept_d.has_arrow(arrow_dc)
+    graph.complete()
+    assert concept_c.has_arrow(arrow_cd)
+    assert concept_d.has_arrow(arrow_dc)
 
 
 def test_graph_completion_rule_6_role_first(graph_pre_role_inclusion):
