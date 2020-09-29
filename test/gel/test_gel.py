@@ -216,7 +216,7 @@ def test_graph_completion_rule_1_isa_first(three_concept_graph):
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.get_role('i'),
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -235,7 +235,7 @@ def test_graph_completion_rule_1_role_first(three_concept_graph):
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.get_role('i'),
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -254,7 +254,7 @@ def test_graph_completion_rule_2_isa_first(three_concept_graph):
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.get_role('i'),
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -273,7 +273,7 @@ def test_graph_completion_rule_2_role_first(three_concept_graph):
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.get_role('i'),
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -291,7 +291,7 @@ def test_graph_completion_rule_3_concept_first(three_concept_graph):
     arrow = gel.Arrow(
         graph.get_concept('i.D'),
         graph.is_a,
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -311,7 +311,7 @@ def test_graph_completion_rule_3_axiom_first(three_concept_graph):
     arrow = gel.Arrow(
         graph.get_concept('i.D'),
         graph.is_a,
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -327,7 +327,7 @@ def test_graph_completion_rule_4_bot_first(three_concept_graph):
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.is_a,
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -347,7 +347,7 @@ def test_graph_completion_rule_4_role_first(three_concept_graph):
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.is_a,
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -369,7 +369,7 @@ def test_graph_completion_rule_4_bot_connected_far(three_concept_graph):
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.is_a,
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -387,8 +387,8 @@ def test_graph_completion_rule_5(graph_complete_rule_5):
 
     concept_c = graph.get_concept('C')
     concept_d = graph.get_concept('D')
-    arrow_cd = gel.Arrow(concept_d, graph.is_a, is_derivated=True)
-    arrow_dc = gel.Arrow(concept_c, graph.is_a, is_derivated=True)
+    arrow_cd = gel.Arrow(concept_d, graph.is_a, is_derived=True)
+    arrow_dc = gel.Arrow(concept_c, graph.is_a, is_derived=True)
 
     assert not concept_c.has_arrow(arrow_cd)
     assert not concept_d.has_arrow(arrow_dc)
@@ -405,7 +405,7 @@ def test_graph_completion_rule_6_role_first(graph_pre_role_inclusion):
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.get_role('j'),
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -423,7 +423,7 @@ def test_graph_completion_rule_6_axiom_first(graph_pre_role_inclusion):
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.get_role('j'),
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -443,7 +443,7 @@ def test_graph_completion_rule_7_axiom1_after(
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.get_role('k'),
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -463,7 +463,7 @@ def test_graph_completion_rule_7_axiom2_after(
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.get_role('k'),
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')
@@ -483,7 +483,7 @@ def test_graph_completion_rule_7_role_after(
     arrow = gel.Arrow(
         graph.get_concept('D'),
         graph.get_role('k'),
-        is_derivated=True
+        is_derived=True
     )
 
     concept_c = graph.get_concept('C')

@@ -2,14 +2,14 @@ from . import roles
 
 
 class Arrow:
-    def __init__(self, concept, role, pbox_id=-1, is_derivated=False):
+    def __init__(self, concept, role, pbox_id=-1, is_derived=False):
         self.concept = concept
         self.role = role
         self.pbox_id = pbox_id
-        self.is_derivated = is_derivated
+        self.is_derived = is_derived
 
     def copy_from(self, concept):
-        return Arrow(concept, self.role, self.pbox_id, self.is_derivated)
+        return Arrow(concept, self.role, self.pbox_id, self.is_derived)
 
     def __eq__(self, other):
         if not isinstance(other, Arrow):
@@ -25,7 +25,7 @@ class Arrow:
         return f'Arrow({repr(self.concept)},' \
                + f' {repr(self.role)},' \
                + f' {self.pbox_id},' \
-               + f' {self.is_derivated})'
+               + f' {self.is_derived})'
 
     @property
     def name(self):

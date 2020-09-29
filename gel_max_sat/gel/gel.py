@@ -12,17 +12,17 @@ from .arrows import Arrow
 
 
 class Axiom:
-    def __init__(self, graph, sub_concept, sup_concept, role, pbox_id=-1, is_derivated=False):
+    def __init__(self, graph, sub_concept, sup_concept, role, pbox_id=-1, is_derived=False):
         self.graph = graph
         self.sub_concept = graph.get_concept(sub_concept)
         self.sup_concept = graph.get_concept(sup_concept)
         self.role = graph.get_role(role)
         self.pbox_id = pbox_id
-        self.is_derivated = is_derivated
+        self.is_derived = is_derived
 
     @property
     def arrow(self):
-        return Arrow(self.sup_concept, self.role, self.pbox_id, self.is_derivated)
+        return Arrow(self.sup_concept, self.role, self.pbox_id, self.is_derived)
 
     @property
     def is_new(self):
@@ -204,12 +204,12 @@ class Graph:
     def derive_axioms(self):
         while not self.derivation_queue.empty():
             axiom = self.derivation_queue.get()
-            self.add_axiom(*axiom, is_derivated=True)
+            self.add_axiom(*axiom, is_derived=True)
 
     def add_axiom(self, sub_concept, sup_concept, role,
-                  pbox_id=-1, is_derivated=False, is_immutable=False):
+                  pbox_id=-1, is_derived=False, is_immutable=False):
 
-        axiom = Axiom(self, sub_concept, sup_concept, role, pbox_id, is_derivated)
+        axiom = Axiom(self, sub_concept, sup_concept, role, pbox_id, is_derived)
         if not is_immutable:
             axiom.fix_existential_head()
 
