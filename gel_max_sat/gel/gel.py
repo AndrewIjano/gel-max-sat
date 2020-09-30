@@ -1,5 +1,5 @@
 import random
-from queue import Queue
+from collections import deque
 from .concepts import (
     Concept,
     EmptyConcept,
@@ -42,6 +42,12 @@ class Axiom:
         self.sub_concept.add_arrow(self.arrow)
         self.role.add_axiom(self.sub_concept, self.sup_concept)
 
+    def __hash__(self):
+        return hash((self.sub_concept.iri, self.sup_concept.iri, self.role.iri, self.pbox_id, self.is_derived))
+
+    def __repr__(self):
+        return f'Axiom({self.sub_concept}, {self.sup_concept}, {self.role}, {self.pbox_id}, {self.is_derived})'
+
 
 class Graph:
     def __init__(self, empty_concept_iri, general_concept_iri):
@@ -59,9 +65,8 @@ class Graph:
 
         self.init.add_arrow(Arrow(self.top, self.is_a))
 
-        self.derivation_queue = Queue()
-        self.derivations = 0
-        self.axioms_added = 0
+        self.derivation_queue = deque()
+        self.derived_axioms = set()
 
     @property
     def has_path_init_to_bot(self):
@@ -187,24 +192,26 @@ class Graph:
             axioms += self.add_random_axiom(pbox_id=pbox_id)
 
     def add_random_axiom(self, pbox_id=-1):
+        sub_concept = random.choice(self.concepts).iri
+        valid_sup_concepts = [c for c in self.concepts if c not in (sub_concept, self.init)]
+        sup_concept = random.choice(valid_sup_concepts).iri
         return self.add_axiom(
-            random.choice(self.real_concepts).iri,
-            random.choice(self.real_concepts).iri,
+            sub_concept,
+            sup_concept,
             random.choice(self.roles).iri,
             pbox_id=pbox_id
         )
 
     def derive_axiom(self, sub_concept, sup_concept, role):
-        arrow = Arrow(sup_concept, role, -1, True)
-        axiom = (sub_concept, sup_concept, role)
-        if not sub_concept.has_arrow(arrow) and axiom not in self.derivation_queue.queue:
-            self.derivation_queue.put(axiom)
-            self.derivations += 1
+        axiom = Axiom(self, sub_concept, sup_concept, role)
+        if axiom.is_new and axiom not in self.derived_axioms:
+            self.derivation_queue.appendleft(axiom)
+            self.derived_axioms.add(axiom)
 
     def derive_axioms(self):
-        while not self.derivation_queue.empty():
-            axiom = self.derivation_queue.get()
-            self.add_axiom(*axiom, is_derived=True)
+        while self.derivation_queue and not self.has_path_init_to_bot:
+            a = self.derivation_queue.pop()
+            self.add_axiom(a.sub_concept, a.sup_concept, a.role, is_derived=True)
 
     def add_axiom(self, sub_concept, sup_concept, role,
                   pbox_id=-1, is_derived=False, is_immutable=False):
@@ -216,9 +223,7 @@ class Graph:
         if not axiom.is_new:
             return False
 
-        self.axioms_added += 1
         axiom.add()
-
         if axiom.is_uncertain:
             self.add_pbox_axiom(axiom)
 
@@ -284,10 +289,10 @@ class Graph:
                         self.derive_axiom(c, d, self.is_a)
 
     def complete(self):
-        while not self.derivation_queue.empty():
+        while self.derivation_queue and not self.has_path_init_to_bot:
             self.derive_axioms()
             self.check_equivalent_concepts()
-        print(f'({self.axioms_added}, {self.derivations})', end=' ')
+        print(f'({len(self.derived_axioms)})', end=' ')
 
     @classmethod
     def random(cls,
@@ -308,11 +313,10 @@ class Graph:
 
         # add certain axioms randomly
         certain_axioms_count = max(0, axioms_count - uncertain_axioms_count)
-        graph.real_concepts = [c for c in graph.concepts]
         graph.add_random_axioms(certain_axioms_count)
 
         # add uncertain axioms randomly
         graph.add_random_axioms(uncertain_axioms_count, is_uncertain=True)
 
-        graph.complete()
+        # graph.complete()
         return graph

@@ -495,7 +495,7 @@ def test_graph_completion_rule_7_role_after(
 
 @pytest.mark.timeout(1)
 def test_graph_can_handle_multiple_completions():
-    graph = gel.Graph.random(concepts_count=200,
-                             axioms_count=400,
+    graph = gel.Graph.random(concepts_count=100,
+                             axioms_count=1000,
                              uncertain_axioms_count=40,
                              roles_count=10)
