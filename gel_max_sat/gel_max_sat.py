@@ -104,7 +104,7 @@ def get_cut_set(weighted_graph, visited):
 
 
 class WeightedGraph:
-    class Arrow():
+    class Arrow:
         def __init__(self, vertex, weight, prob_axiom_index):
             self.vertex = vertex
             self.weight = weight

@@ -27,8 +27,8 @@ def has_solution(result):
 
 def init_argparse():
     parser = argparse.ArgumentParser(
-        description='Computes the GEL-MaxSAT algorithm'
-        + 'in a weighted Graphic EL knowledge base.',
+        description='Computes the GEL-MaxSAT algorithm' \
+                    'in a weighted Graphic EL knowledge base.',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument(
