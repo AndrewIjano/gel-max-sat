@@ -114,14 +114,14 @@ class WeightedGraph:
             return f'({self.vertex}, {self.weight}, {self.prob_axiom_index})'
 
     def __init__(self, kb, weights):
-        indexes = {j.iri: i for i, j in enumerate(kb.concepts())}
+        indexes = {j.iri: i for i, j in enumerate(kb.concepts)}
         weights = [] if weights is None else weights
 
-        self.order = len(kb.concepts())
+        self.order = len(kb.concepts)
         self.infinity = max(weights) + 1 if len(weights) > 0 else 1
 
-        self.init = indexes[kb.init()]
-        self.bottom = indexes[kb.bottom()]
+        self.init = indexes[kb.init.iri]
+        self.bottom = indexes[kb.bot.iri]
         self.negative_arrows = []
 
         self.adj = [[] for _ in range(self.order)]
@@ -138,7 +138,7 @@ class WeightedGraph:
                 return self.infinity
             return weights[pbox_id]
 
-        for concept in kb.concepts():
+        for concept in kb.concepts:
             for a in concept.sup_arrows:
                 weight = get_weight(a)
 

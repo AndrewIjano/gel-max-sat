@@ -1,4 +1,4 @@
-from .gel import Graph
+from .gel import KnowledgeBase
 from .concepts import (
     Concept,
     ExistentialConcept,
@@ -8,7 +8,7 @@ from .roles import Role
 from .arrows import Arrow
 
 __all__ = [
-    'Graph',
+    'KnowledgeBase',
     'Concept',
     'ExistentialConcept',
     'IndividualConcept',

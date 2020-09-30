@@ -21,7 +21,7 @@ def convert_solution_to_ntriples(kb, result):
         return f'<{sub_concept_iri}> <{role_iri}> <{sup_concept_iri}> .'
 
     ntriples = []
-    for sub_concept in kb.concepts():
+    for sub_concept in kb.concepts:
         for sup_arrow in sub_concept.sup_arrows:
             sup_concept = sup_arrow.concept
             role = sup_arrow.role
@@ -60,7 +60,7 @@ def print_header():
 
 def digest_problem(kb, weights):
     problem = []
-    for concept in kb.concepts():
+    for concept in kb.concepts:
         for sup_arrow in concept.sup_arrows:
             pbox_id = sup_arrow.pbox_id
             if is_real_axiom(kb, concept, sup_arrow):
@@ -71,7 +71,7 @@ def digest_problem(kb, weights):
 
 
 def is_real_axiom(kb, sub_concept, sup_arrow):
-    has_init = kb.graph.init in [sub_concept, sup_arrow.concept]
+    has_init = kb.init in [sub_concept, sup_arrow.concept]
     return not(has_init or sup_arrow.is_derived)
 
 

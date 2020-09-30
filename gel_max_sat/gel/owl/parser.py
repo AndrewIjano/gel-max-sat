@@ -1,5 +1,5 @@
 import owlready2 as owl
-from .. import gel
+from gel_max_sat import gel
 from . import pbox_parser
 
 
@@ -16,7 +16,7 @@ def get_graph(onto):
     owl_individuals = list(onto.individuals())
     owl_roles = onto.object_properties()
 
-    graph = gel.Graph(owl.Nothing.iri, owl.Thing.iri)
+    graph = gel.KnowledgeBase(owl.Nothing.iri, owl.Thing.iri)
 
     add_concepts(graph, owl_concepts, gel.Concept)
     add_concepts(graph, owl_individuals, gel.IndividualConcept)

@@ -1,4 +1,5 @@
 import random
+from . import owl
 from .concepts import (
     Concept,
     EmptyConcept,
@@ -47,7 +48,7 @@ class Axiom:
         return f'Axiom({self.sub_concept}, {self.sup_concept}, {self.role}, {self.pbox_id})'
 
 
-class Graph:
+class KnowledgeBase:
     def __init__(self, empty_concept_iri, general_concept_iri):
         self.init = Concept('init')
         self.bot = EmptyConcept(empty_concept_iri)
@@ -199,6 +200,12 @@ class Graph:
 
     def add_pbox_axiom(self, axiom):
         self.pbox_axioms[axiom.pbox_id] = (axiom.sub_concept, axiom.sup_concept, axiom.role)
+
+    @classmethod
+    def from_file(cls, file):
+        onto, kb = owl.parser.parse(file)
+        kb.onto = onto
+        return kb
 
     @classmethod
     def random(cls,
