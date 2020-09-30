@@ -140,9 +140,6 @@ class WeightedGraph:
 
         for concept in kb.concepts():
             for a in concept.sup_arrows:
-                if a.is_derivated:
-                    continue
-
                 weight = get_weight(a)
 
                 if weight < 0:

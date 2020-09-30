@@ -72,7 +72,7 @@ def digest_problem(kb, weights):
 
 def is_real_axiom(kb, sub_concept, sup_arrow):
     has_init = kb.graph.init in [sub_concept, sup_arrow.concept]
-    return not(has_init or sup_arrow.is_derivated)
+    return not(has_init or sup_arrow.is_derived)
 
 
 def str_weight(pbox_id, weights):

@@ -19,8 +19,7 @@ def concept_with_arrows():
 
 def test_concept_arrow_addition(concept_with_arrows):
     concept, arrows = concept_with_arrows
-    assert concept.sup_arrows[0] == arrows[0]
-    assert concept.sup_arrows[1] == arrows[1]
+    assert set(arrows) == concept.sup_arrows
 
 
 def test_concept_same_arrow_addition(concept_with_arrows):

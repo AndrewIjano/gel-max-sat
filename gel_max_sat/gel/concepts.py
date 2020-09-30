@@ -5,8 +5,8 @@ from . import iri
 class Concept:
     def __init__(self, iri):
         self.iri = str(iri)
-        self.sup_arrows = []
-        self.sub_arrows = []
+        self.sup_arrows = set()
+        self.sub_arrows = set()
         self._is_empty = False
         self.reaches = {self}
         self.is_individual = False
@@ -26,8 +26,8 @@ class Concept:
         sup_concept = sup_arrow.concept
         sub_arrow = sup_arrow.copy_from(self)
         if not self.has_arrow(sup_arrow):
-            self.sup_arrows += [sup_arrow]
-            sup_concept.sub_arrows += [sub_arrow]
+            self.sup_arrows.add(sup_arrow)
+            sup_concept.sub_arrows.add(sub_arrow)
 
     def remove_arrow(self, sup_arrow):
         sup_concept = sup_arrow.concept
