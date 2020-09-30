@@ -18,7 +18,6 @@ class KnowledgeBase:
     @classmethod
     def from_file(cls, file):
         onto, graph = owl.parser.parse(file)
-        graph.complete()
 
         kb = cls(graph)
         kb.onto = onto
