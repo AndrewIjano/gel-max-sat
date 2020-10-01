@@ -1,5 +1,5 @@
 from .gel_max_sat import solve, is_satisfiable
-from .knowledge_base import KnowledgeBase
+from .gel import KnowledgeBase
 from .util import print_gel_max_sat_problem, save_solution
 
 __all__ = [

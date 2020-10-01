@@ -1,5 +1,5 @@
 from copy import deepcopy
-from collections import namedtuple
+from collections import namedtuple, deque
 
 
 def is_satisfiable(kb, weights):
@@ -44,16 +44,16 @@ def get_augment_path(residual_graph, s, t):
     visited = [False] * residual_graph.order
     parent = [0] * residual_graph.order
 
-    queue = [s]
+    queue = deque([s])
     visited[s] = True
     parent[s] = -1
 
     while len(queue) > 0:
-        u = queue.pop(0)
+        u = queue.pop()
         for arrow in residual_graph.adj[u]:
             v = arrow.vertex
             if not visited[v] and arrow.weight > 0:
-                queue += [v]
+                queue.appendleft(v)
                 visited[v] = True
                 parent[v] = u
 
@@ -104,7 +104,7 @@ def get_cut_set(weighted_graph, visited):
 
 
 class WeightedGraph:
-    class Arrow():
+    class Arrow:
         def __init__(self, vertex, weight, prob_axiom_index):
             self.vertex = vertex
             self.weight = weight
@@ -114,14 +114,14 @@ class WeightedGraph:
             return f'({self.vertex}, {self.weight}, {self.prob_axiom_index})'
 
     def __init__(self, kb, weights):
-        indexes = {j.iri: i for i, j in enumerate(kb.concepts())}
+        indexes = {j.iri: i for i, j in enumerate(kb.concepts)}
         weights = [] if weights is None else weights
 
-        self.order = len(kb.concepts())
+        self.order = len(kb.concepts)
         self.infinity = max(weights) + 1 if len(weights) > 0 else 1
 
-        self.init = indexes[kb.init()]
-        self.bottom = indexes[kb.bottom()]
+        self.init = indexes[kb.init.iri]
+        self.bottom = indexes[kb.bot.iri]
         self.negative_arrows = []
 
         self.adj = [[] for _ in range(self.order)]
@@ -138,7 +138,7 @@ class WeightedGraph:
                 return self.infinity
             return weights[pbox_id]
 
-        for concept in kb.concepts():
+        for concept in kb.concepts:
             for a in concept.sup_arrows:
                 weight = get_weight(a)
 

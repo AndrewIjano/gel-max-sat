@@ -4,7 +4,7 @@ from gel_max_sat import gel
 
 @pytest.fixture
 def simple_graph():
-    graph = gel.Graph('bot', 'top')
+    graph = gel.KnowledgeBase('bot', 'top')
     graph.add_concept(gel.Concept('C'))
     graph.add_concept(gel.IndividualConcept('a'))
     graph.add_role(gel.Role('r'))
@@ -16,7 +16,7 @@ def simple_graph():
 
 @pytest.fixture
 def init_bot_graph():
-    graph = gel.Graph('bot', 'top')
+    graph = gel.KnowledgeBase('bot', 'top')
     graph.add_concept(gel.Concept('C'))
     graph.add_concept(gel.IndividualConcept('a'))
     graph.add_role(gel.Role('r'))
@@ -27,7 +27,7 @@ def init_bot_graph():
 
 @pytest.fixture
 def three_concept_graph():
-    graph = gel.Graph('bot', 'top')
+    graph = gel.KnowledgeBase('bot', 'top')
     graph.add_concept(gel.Concept('C'))
     graph.add_concept(gel.Concept('C_prime'))
     graph.add_concept(gel.Concept('D'))
@@ -37,7 +37,7 @@ def three_concept_graph():
 
 @pytest.fixture
 def graph_pre_role_inclusion():
-    graph = gel.Graph('bot', 'top')
+    graph = gel.KnowledgeBase('bot', 'top')
     graph.add_concept(gel.Concept('C'))
     graph.add_concept(gel.Concept('D'))
 
@@ -48,7 +48,7 @@ def graph_pre_role_inclusion():
 
 @pytest.fixture
 def graph_pre_chained_role_inclusion():
-    graph = gel.Graph('bot', 'top')
+    graph = gel.KnowledgeBase('bot', 'top')
     graph.add_concept(gel.Concept('C'))
     graph.add_concept(gel.Concept('D_prime'))
     graph.add_concept(gel.Concept('D'))
@@ -61,7 +61,7 @@ def graph_pre_chained_role_inclusion():
 
 @pytest.fixture
 def graph_complete_rule_5():
-    graph = gel.Graph('bot', 'top')
+    graph = gel.KnowledgeBase('bot', 'top')
     graph.add_concept(gel.Concept('C'))
     graph.add_concept(gel.Concept('D'))
     graph.add_concept(gel.Concept('C1'))
@@ -83,17 +83,6 @@ def graph_complete_rule_5():
     graph.add_axiom('a', 'C', graph.is_a)
     graph.add_axiom('a', 'D-1', graph.is_a)
     return graph
-
-
-@pytest.mark.timeout(1)
-def test_graph_has_no_path_init_to_bot(simple_graph):
-    assert not simple_graph.has_path_init_to_bot
-
-
-@pytest.mark.timeout(1)
-def test_graph_has_path_init_to_bot(init_bot_graph):
-    assert init_bot_graph.has_path_init_to_bot
-
 
 @pytest.mark.timeout(1)
 def test_graph_concepts(simple_graph):
@@ -169,7 +158,7 @@ def test_graph_link_existential_concept(simple_graph):
 
 @pytest.mark.timeout(1)
 def test_graph_add_axiom():
-    graph = gel.Graph('bot', 'top')
+    graph = gel.KnowledgeBase('bot', 'top')
     graph.add_concept(gel.Concept('C'))
     graph.add_concept(gel.Concept('D'))
     assert graph.add_axiom('C', 'D', graph.is_a)
@@ -189,7 +178,7 @@ def test_graph_fix_existential_head_axiom(simple_graph):
 
 @pytest.mark.timeout(1)
 def test_graph_add_pbox_axiom():
-    graph = gel.Graph('bot', 'top')
+    graph = gel.KnowledgeBase('bot', 'top')
     assert graph.pbox_axioms == {}
 
     graph.add_concept(gel.Concept('C'))
@@ -207,7 +196,7 @@ def test_graph_add_pbox_axiom():
 
 @pytest.mark.timeout(1)
 def test_graph_can_handle_multiple_completions():
-    graph = gel.Graph.random(concepts_count=100,
-                             axioms_count=1000,
-                             uncertain_axioms_count=40,
-                             roles_count=10)
+    graph = gel.KnowledgeBase.random(concepts_count=100,
+                                     axioms_count=1000,
+                                     uncertain_axioms_count=40,
+                                     roles_count=10)

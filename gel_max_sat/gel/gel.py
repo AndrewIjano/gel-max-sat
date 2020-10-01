@@ -1,4 +1,5 @@
 import random
+from . import owl
 from .concepts import (
     Concept,
     EmptyConcept,
@@ -8,6 +9,8 @@ from .concepts import (
 )
 from .roles import Role, IsA
 from .arrows import Arrow
+
+from collections import defaultdict
 
 
 class Axiom:
@@ -47,7 +50,7 @@ class Axiom:
         return f'Axiom({self.sub_concept}, {self.sup_concept}, {self.role}, {self.pbox_id})'
 
 
-class Graph:
+class KnowledgeBase:
     def __init__(self, empty_concept_iri, general_concept_iri):
         self.init = Concept('init')
         self.bot = EmptyConcept(empty_concept_iri)
@@ -58,7 +61,7 @@ class Graph:
         self._concepts = {c.iri: c for c in [self.init, self.bot, self.top]}
         self._roles = {r.iri: r for r in [self.is_a]}
 
-        self.role_inclusions = {}
+        self.role_inclusions = defaultdict(list)
         self.pbox_axioms = {}
 
         self.init.add_arrow(Arrow(self.top, self.is_a))
@@ -89,11 +92,14 @@ class Graph:
         self._concepts[concept.iri] = concept
 
         if isinstance(concept, IndividualConcept):
-            self.init.add_arrow(Arrow(concept, self.is_a))
+            self.link_individual_concept(concept)
 
         if isinstance(concept, ExistentialConcept):
             self.fix_previous_existential_head_axioms(concept)
             self.link_existential_concept(concept)
+
+    def link_individual_concept(self, concept):
+        self.init.add_arrow(Arrow(concept, self.is_a))
 
     def has_concept(self, concept):
         return concept.iri in self._concepts
@@ -152,17 +158,11 @@ class Graph:
 
     def add_chained_role_inclusion(self, sub_roles_iri, sup_role_iri):
         sup_role = self.get_role(sup_role_iri)
-
-        sup_roles = self.role_inclusions.get(sub_roles_iri, [])
-        sup_roles += [sup_role]
-        self.role_inclusions[sub_roles_iri] = sup_roles
+        self.role_inclusions[sub_roles_iri] += [sup_role]
 
     def add_role_inclusion(self, sub_role_iri, sup_role_iri):
         sup_role = self.get_role(sup_role_iri)
-
-        sup_roles = self.role_inclusions.get(sub_role_iri, [])
-        sup_roles += [sup_role]
-        self.role_inclusions[sub_role_iri] = sup_roles
+        self.role_inclusions[sub_role_iri] += [sup_role]
 
     def add_random_axioms(self, axioms_count, is_uncertain=False):
         axioms = 0
@@ -199,6 +199,12 @@ class Graph:
 
     def add_pbox_axiom(self, axiom):
         self.pbox_axioms[axiom.pbox_id] = (axiom.sub_concept, axiom.sup_concept, axiom.role)
+
+    @classmethod
+    def from_file(cls, file):
+        onto, kb = owl.parser.parse(file)
+        kb.onto = onto
+        return kb
 
     @classmethod
     def random(cls,
