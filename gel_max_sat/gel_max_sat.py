@@ -1,5 +1,5 @@
 from copy import deepcopy
-from collections import namedtuple
+from collections import namedtuple, deque
 
 
 def is_satisfiable(kb, weights):
@@ -44,16 +44,16 @@ def get_augment_path(residual_graph, s, t):
     visited = [False] * residual_graph.order
     parent = [0] * residual_graph.order
 
-    queue = [s]
+    queue = deque([s])
     visited[s] = True
     parent[s] = -1
 
     while len(queue) > 0:
-        u = queue.pop(0)
+        u = queue.pop()
         for arrow in residual_graph.adj[u]:
             v = arrow.vertex
             if not visited[v] and arrow.weight > 0:
-                queue += [v]
+                queue.appendleft(v)
                 visited[v] = True
                 parent[v] = u
 

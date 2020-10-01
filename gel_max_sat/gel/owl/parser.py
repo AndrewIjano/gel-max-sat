@@ -28,9 +28,9 @@ def get_kb(onto):
     return kb
 
 
-def add_concepts(kb, owl_concepts, ConceptClass):
+def add_concepts(kb, owl_concepts, concept_class: type):
     for owl_concept in owl_concepts:
-        kb.add_concept(ConceptClass(owl_concept.iri))
+        kb.add_concept(concept_class(owl_concept.iri))
 
 
 def add_roles(kb, owl_roles):
@@ -41,15 +41,15 @@ def add_roles(kb, owl_roles):
 def add_role_inclusions_from_roles(kb, owl_roles):
     for owl_sup_role in owl_roles:
         for owl_sub_role in owl_sup_role.get_property_chain():
-            add_role_inclusion_chain(kb, owl_sub_role, owl_sup_role)
+            add_chained_role_inclusion(kb, owl_sub_role, owl_sup_role)
 
         for owl_sub_role in owl_sup_role.subclasses():
             add_role_inclusion(kb, owl_sub_role, owl_sup_role)
 
 
-def add_role_inclusion_chain(kb, owl_sub_role_chain, owl_sup_role):
+def add_chained_role_inclusion(kb, owl_sub_role_chain, owl_sup_role):
     owl_sub_role1, owl_sub_role2 = owl_sub_role_chain.properties
-    kb.add_role_inclusion_chain(
+    kb.add_chained_role_inclusion(
         (owl_sub_role1.iri, owl_sub_role2.iri),
         owl_sup_role.iri)
 

@@ -10,6 +10,8 @@ from .concepts import (
 from .roles import Role, IsA
 from .arrows import Arrow
 
+from collections import defaultdict
+
 
 class Axiom:
     def __init__(self, graph, sub_concept, sup_concept, role, pbox_id=-1):
@@ -59,7 +61,7 @@ class KnowledgeBase:
         self._concepts = {c.iri: c for c in [self.init, self.bot, self.top]}
         self._roles = {r.iri: r for r in [self.is_a]}
 
-        self.role_inclusions = {}
+        self.role_inclusions = defaultdict(list)
         self.pbox_axioms = {}
 
         self.init.add_arrow(Arrow(self.top, self.is_a))
@@ -90,11 +92,14 @@ class KnowledgeBase:
         self._concepts[concept.iri] = concept
 
         if isinstance(concept, IndividualConcept):
-            self.init.add_arrow(Arrow(concept, self.is_a))
+            self.link_individual_concept(concept)
 
         if isinstance(concept, ExistentialConcept):
             self.fix_previous_existential_head_axioms(concept)
             self.link_existential_concept(concept)
+
+    def link_individual_concept(self, concept):
+        self.init.add_arrow(Arrow(concept, self.is_a))
 
     def has_concept(self, concept):
         return concept.iri in self._concepts
@@ -153,17 +158,11 @@ class KnowledgeBase:
 
     def add_chained_role_inclusion(self, sub_roles_iri, sup_role_iri):
         sup_role = self.get_role(sup_role_iri)
-
-        sup_roles = self.role_inclusions.get(sub_roles_iri, [])
-        sup_roles += [sup_role]
-        self.role_inclusions[sub_roles_iri] = sup_roles
+        self.role_inclusions[sub_roles_iri] += [sup_role]
 
     def add_role_inclusion(self, sub_role_iri, sup_role_iri):
         sup_role = self.get_role(sup_role_iri)
-
-        sup_roles = self.role_inclusions.get(sub_role_iri, [])
-        sup_roles += [sup_role]
-        self.role_inclusions[sub_role_iri] = sup_roles
+        self.role_inclusions[sub_role_iri] += [sup_role]
 
     def add_random_axioms(self, axioms_count, is_uncertain=False):
         axioms = 0

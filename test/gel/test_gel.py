@@ -84,17 +84,6 @@ def graph_complete_rule_5():
     graph.add_axiom('a', 'D-1', graph.is_a)
     return graph
 
-
-@pytest.mark.timeout(1)
-def test_graph_has_no_path_init_to_bot(simple_graph):
-    assert not simple_graph.has_path_init_to_bot
-
-
-@pytest.mark.timeout(1)
-def test_graph_has_path_init_to_bot(init_bot_graph):
-    assert init_bot_graph.has_path_init_to_bot
-
-
 @pytest.mark.timeout(1)
 def test_graph_concepts(simple_graph):
     expected_iris = [
